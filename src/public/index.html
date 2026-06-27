@@ -7,6 +7,7 @@
 	<title>MEMOS-WORKER</title>
 	<script src='https://unpkg.com/turndown@7.2.1/dist/turndown.js'></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js'></script>
+	<script src='/i18n.js'></script>
 	<link id='hljs-light-theme' rel='stylesheet'
 				href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css'>
 	<link id='hljs-dark-theme' rel='stylesheet'
@@ -3054,9 +3055,12 @@
 	<form id='login-form' class='auth-form'>
 		<h3>MEMOS</h3>
 		<div id='login-error'></div>
-		<input type='text' id='username' placeholder='Username' required>
-		<input type='password' id='password' placeholder='Password' required>
-		<button type='submit' id='login-btn'>Login</button>
+		<input type='text' id='username' data-i18n-placeholder='login.username' placeholder='Username' required>
+		<input type='password' id='password' data-i18n-placeholder='login.password' placeholder='Password' required>
+		<button type='submit' id='login-btn' data-i18n='login.button'>Login</button>
+		<div style="text-align: center; margin-top: 0.5rem;">
+			<button type='button' id='login-lang-toggle-btn' style="background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 0.85rem;">中文 / English</button>
+		</div>
 	</form>
 </div>
 <!-- 一个包裹三栏的容器 -->
@@ -3070,8 +3074,8 @@
 				<path
 					d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'></path>
 			</svg>
-			<input type='search' id='global-search-input' placeholder='Search...'>
-			<button id='clear-search-btn' class='icon-btn' style='display: none;' title='Clear'>
+			<input type='search' id='global-search-input' data-i18n-placeholder='search.placeholder' placeholder='Search...'>
+			<button id='clear-search-btn' class='icon-btn' style='display: none;' data-i18n-title='search.clear' title='Clear'>
 				<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
 					<path
 						d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'></path>
@@ -3083,15 +3087,15 @@
 		<div id='stats-card' class='sidebar-content'>
 			<div class='stat-item'>
 				<span id='stats-days' class='stat-value'>--</span>
-				<span class='stat-label'>Days</span>
+				<span class='stat-label' data-i18n='stats.days'>Days</span>
 			</div>
 			<div class='stat-item'>
 				<span id='stats-memos' class='stat-value'>--</span>
-				<span class='stat-label'>Memos</span>
+				<span class='stat-label' data-i18n='stats.memos'>Memos</span>
 			</div>
 			<div class='stat-item'>
 				<span id='stats-tags' class='stat-value'>--</span>
-				<span class='stat-label'>Tags</span>
+				<span class='stat-label' data-i18n='stats.tags'>Tags</span>
 			</div>
 		</div>
 
@@ -3103,9 +3107,9 @@
 
 		<div class='sidebar-content' id='tags-section-wrapper'>
 			<h4>
-				<span>Tags</span>
+				<span data-i18n='tags.title'>Tags</span>
 				<div class='sidebar-header-actions'>
-					<button id='clear-tags-filter-btn' class='icon-btn' title='Clear tag filter'></button>
+					<button id='clear-tags-filter-btn' class='icon-btn' data-i18n-title='tags.clearFilter' title='Clear tag filter'></button>
 					<button class='sidebar-toggle-btn' data-target='tags-container'>
 						<svg class='toggle-icon' xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px'
 								 fill='currentColor'>
@@ -3122,9 +3126,9 @@
 
 		<div class='sidebar-content' id='timeline-section-wrapper'>
 			<h4>
-				<span>Timeline</span>
+				<span data-i18n='timeline.title'>Timeline</span>
 				<div class='sidebar-header-actions'>
-					<button id='clear-filter-btn' class='icon-btn' title='Show All Notes'></button>
+					<button id='clear-filter-btn' class='icon-btn' data-i18n-title='timeline.showAll' title='Show All Notes'></button>
 					<button class='sidebar-toggle-btn' data-target='timeline-container'>
 						<svg class='toggle-icon' xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px'
 								 fill='currentColor'>
@@ -3147,38 +3151,42 @@
 				<header class='app-header'>
 					<h3 id='header-title'>MEMOS</h3>
 					<div class='header-actions'>
-						<button type='button' id='refresh-btn' class='icon-btn' title='Refresh'>
+						<button type='button' id='refresh-btn' class='icon-btn' data-i18n-title='header.refresh' title='Refresh'>
 							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
 								<path
 									d='M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z'></path>
 							</svg>
 						</button>
-						<button id='waterfall-toggle-btn' class='icon-btn' title='Toggle waterfall mode'>
+						<button id='waterfall-toggle-btn' class='icon-btn' data-i18n-title='header.waterfall' title='Toggle waterfall mode'>
 							<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none' /><path d='M10 18h5V5h-5v13zm-6 0h5V5H4v13zM16 5v13h5V5h-5z' /></svg>
 						</button>
-						<button id='wide-mode-toggle-btn' class='icon-btn' title='Toggle wide mode'>
+						<button id='wide-mode-toggle-btn' class='icon-btn' data-i18n-title='header.wideMode' title='Toggle wide mode'>
 							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z'></path></svg>
 						</button>
 
 						<div id='more-actions-container' class='more-actions-container'>
-							<button id='more-actions-btn' class='icon-btn' title='More options'>
+							<button id='more-actions-btn' class='icon-btn' data-i18n-title='header.more' title='More options'>
 								<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none'/><path d='M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/></svg>
 							</button>
 
 							<div id='more-menu-popover' class='more-menu-popover'>
 								<button id='settings-btn' class='more-menu-item'>
 									<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none' /><path d='M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.09-.7-1.71-.98L14.82 2.8c-.05-.23-.26-.4-.5-.4h-4c-.25 0-.46.17-.5.4L9.19 5.3c-.62.27-1.19.58-1.71.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.09.7 1.71.98l.37 2.66c.05.23.26.4.5.4h4c.25 0 .46-.17-.5-.4l.37-2.66c.62-.28 1.19-.58 1.71-.98l2.49 1c.22.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z' /></svg>
-									<span>Settings</span>
+									<span data-i18n='header.settings'>Settings</span>
 								</button>
 								<button id='theme-toggle-btn' class='more-menu-item'></button>
 
 								<button id='theme-color-btn' class='more-menu-item'>
 									<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none' /><path d='M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z' /></svg>
-									<span>Theme Color</span>
+									<span data-i18n='header.themeColor'>Theme Color</span>
+								</button>
+								<button id='lang-toggle-btn' class='more-menu-item'>
+									<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none'/><path d='M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z'/></svg>
+									<span data-i18n='common.language'>Language</span>
 								</button>
 								<button id='logout-btn' class='more-menu-item'>
 									<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M16 17v-3H9v-2h7V9l4 4-4 4zm-5-3h-1v-2h1v2zm-2 3h-1v-2h1v2zm-7-11v16h14v-2H4V4h10V2H2v16z'></path></svg>
-									<span>Logout</span>
+									<span data-i18n='header.logout'>Logout</span>
 								</button>
 							</div>
 						</div>
@@ -3187,14 +3195,14 @@
 
 				<form id='note-form'>
 					<div id='main-editor-container'>
-						<textarea id='note-input' placeholder='Write in Markdown...' rows='3'></textarea>
+						<textarea id='note-input' data-i18n-placeholder='editor.placeholder' placeholder='Write in Markdown...' rows='3'></textarea>
 						<div id='main-edit-preview' class='edit-preview note-content'></div>
 					</div>
 
 					<div class='form-actions'>
 						<!-- 左侧工具组 -->
 						<div class='toolbar-group-left'>
-							<button type='button' id='insert-tag-btn' class='icon-btn' title='Insert tag (#)'>
+							<button type='button' id='insert-tag-btn' class='icon-btn' data-i18n-title='editor.insertTag' title='Insert tag (#)'>
 								<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'
 										 stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'
 										 class='lucide lucide-hash size-5' data-darkreader-inline-stroke=''
@@ -3206,10 +3214,10 @@
 								</svg>
 							</button>
 							<div id='tag-dropdown' class='tag-dropdown-container'>
-								<input type='text' id='tag-search-input' placeholder='Search or select tag...'>
+								<input type='text' id='tag-search-input' data-i18n-placeholder='editor.tagSearch' placeholder='Search or select tag...'>
 								<ul id='tag-dropdown-list'></ul>
 							</div>
-							<button type='button' id='insert-image-btn' class='icon-btn' title='Insert image'>
+							<button type='button' id='insert-image-btn' class='icon-btn' data-i18n-title='editor.insertImage' title='Insert image'>
 								<svg xmlns='http://www.w3.org/2000/svg' height='20px' viewBox='0 0 24 24' width='20px'
 										 fill='currentColor'>
 									<path d='M0 0h24v24H0V0z' fill='none' />
@@ -3225,7 +3233,7 @@
 <!--										d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z' />-->
 <!--								</svg>-->
 <!--							</button>-->
-							<button type='button' id='select-files-btn' class='icon-btn' title='Select files'>
+							<button type='button' id='select-files-btn' class='icon-btn' data-i18n-title='editor.selectFiles' title='Select files'>
 								<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
 									<path
 										d='M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z'></path>
@@ -3236,12 +3244,12 @@
 						</div>
 						<!-- 右侧工具组 -->
 						<div class='toolbar-group-right'>
-							<button type='button' id='enter-fullscreen-btn' class='icon-btn' title='Fullscreen Editor'>
+							<button type='button' id='enter-fullscreen-btn' class='icon-btn' data-i18n-title='editor.fullscreen' title='Fullscreen Editor'>
 								<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
 									<path d='M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z'></path>
 								</svg>
 							</button>
-							<button type='button' id='main-preview-toggle-btn' class='icon-btn' title='Toggle Preview'>
+							<button type='button' id='main-preview-toggle-btn' class='icon-btn' data-i18n-title='editor.togglePreview' title='Toggle Preview'>
 								<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' stroke-width='2'
 										 stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'>
 									<path stroke='none' d='M0 0h24v24H0z' fill='none' />
@@ -3250,14 +3258,14 @@
 										d='M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7' />
 								</svg>
 							</button>
-							<button type='button' id='main-split-toggle-btn' class='icon-btn' title='Toggle Split View'>
+							<button type='button' id='main-split-toggle-btn' class='icon-btn' data-i18n-title='editor.toggleSplit' title='Toggle Split View'>
 								<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px'
 										 fill='currentColor'>
 									<path d='M0 0h24v24H0V0z' fill='none' />
 									<path d='M3 15h8v-2H3v2zm0 4h8v-2H3v2zm0-8h8V9H3v2zm0-6v2h8V5H3zm10 0h8v14h-8V5z' />
 								</svg>
 							</button>
-							<button type='submit' id='submit-btn' style='margin-left: 8px'>Save</button>
+							<button type='submit' id='submit-btn' style='margin-left: 8px' data-i18n='editor.save'>Save</button>
 						</div>
 					</div>
 					<div id='file-list-display' class='file-list-display'></div>
@@ -3269,18 +3277,18 @@
 					</div>
 					<div id='notes-container'></div>
 				</div>
-				<div id='scroll-loader' class='loading-indicator' style='display: none;'>Loading more...</div>
+				<div id='scroll-loader' class='loading-indicator' style='display: none;' data-i18n='common.loadingMore'>Loading more...</div>
 			</div>
 
 			<!-- 附件浏览页面容器 -->
 			<div id="attachments-viewer" style="display: none;">
 				<header class="attachments-header">
-					<h3>Files</h3>
+					<h3 data-i18n='attachments.title'>Files</h3>
 					<div class="attachments-tabs">
-						<button class="tab-btn active" data-filter="all">✨ All</button>
-						<button class="tab-btn" data-filter="image">🏞️ Images</button>
-						<button class="tab-btn" data-filter="video">🎬 Videos</button>
-						<button class="tab-btn" data-filter="file">📄 Files</button>
+						<button class="tab-btn active" data-filter="all" data-i18n='attachments.all'>✨ All</button>
+						<button class="tab-btn" data-filter="image" data-i18n='attachments.images'>🏞️ Images</button>
+						<button class="tab-btn" data-filter="video" data-i18n='attachments.videos'>🎬 Videos</button>
+						<button class="tab-btn" data-filter="file" data-i18n='attachments.files'>📄 Files</button>
 					</div>
 				</header>
 				<div id="attachments-content" class="loading-state">
@@ -3293,32 +3301,32 @@
 
 	<aside id='right-sidebar'>
 		<div class='sidebar-buttons-group'>
-			<button id='home-tab-btn' class='sidebar-tab-btn active' data-tab-name='home' title='Home'>
+			<button id='home-tab-btn' class='sidebar-tab-btn active' data-tab-name='home' data-i18n-title='sidebar.home' title='Home'>
 				<svg xmlns='http://www.w3.org/2000/svg' height='28px' viewBox='0 0 24 24' width='28px' fill='currentColor'>
 					<path d='M0 0h24v24H0V0z' fill='none' />
 					<path d='M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z' />
 				</svg>
-				<span>Home</span>
+				<span data-i18n='sidebar.home'>Home</span>
 			</button>
-			<button id='favorites-tab-btn' class='sidebar-tab-btn' data-tab-name='favorites' title='Favorites'>
+			<button id='favorites-tab-btn' class='sidebar-tab-btn' data-tab-name='favorites' data-i18n-title='sidebar.favorites' title='Favorites'>
 				<svg xmlns='http://www.w3.org/2000/svg' height='28px' viewBox='0 0 24 24' width='28px' fill='currentColor'>
 					<path d='M0 0h24v24H0V0z' fill='none' />
 					<path
 						d='M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51z' />
 				</svg>
-				<span>Favorites</span>
+				<span data-i18n='sidebar.favorites'>Favorites</span>
 			</button>
-			<button id="archive-tab-btn" class="sidebar-tab-btn" data-tab-name="archive" title="Archive">
+			<button id="archive-tab-btn" class="sidebar-tab-btn" data-tab-name="archive" data-i18n-title="sidebar.archive" title="Archive">
 				<svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM6.24 5h11.52l.83 1H5.41l.83-1zM5 19V8h14v11H5zm11-5.5l-4 4-4-4 1.41-1.41L11 13.67V10h2v3.67l1.59-1.58L16 13.5z"/></svg>
-				<span>Archive</span>
+				<span data-i18n="sidebar.archive">Archive</span>
 			</button>
-			<button id="attachments-tab-btn" class="sidebar-tab-btn" data-tab-name="attachments" title="Attachments">
+			<button id="attachments-tab-btn" class="sidebar-tab-btn" data-tab-name="attachments" data-i18n-title="sidebar.files" title="Attachments">
 				<svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-				<span>Files</span>
+				<span data-i18n="sidebar.files">Files</span>
 			</button>
-			<a href="/docs" target="_blank" class="sidebar-tab-btn" title="Open Docs">
+			<a href="/docs" target="_blank" class="sidebar-tab-btn" data-i18n-title="sidebar.openDocs" title="Open Docs">
 				<svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-				<span>Docs</span>
+				<span data-i18n="sidebar.docs">Docs</span>
 			</a>
 		</div>
 	</aside>
@@ -3332,7 +3340,7 @@
 	<div class='custom-color-picker'>
 		<label for='color-picker-input' class='color-picker-label' id='color-picker-label'>
 			<div id='color-picker-preview' class='color-picker-preview'></div>
-			<span>Custom</span>
+			<span data-i18n='color.custom'>Custom</span>
 		</label>
 		<input type='color' id='color-picker-input' class='hidden-color-input'>
 
@@ -3343,13 +3351,13 @@
 </div>
 
 <div id='note-popover-menu' class='popover-menu'>
-	<button class='icon-btn' data-action='favorite' title='Favorite'>
+	<button class='icon-btn' data-action='favorite' data-i18n-title='note.favorite' title='Favorite'>
 		<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'>
 			<path d='M0 0h24v24H0V0z' fill='none' />
 			<path d='M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51z' />
 		</svg>
 	</button>
-	<button class='icon-btn' data-action='pin' title='Pin'>
+	<button class='icon-btn' data-action='pin' data-i18n-title='note.pin' title='Pin'>
 		<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'>
 			<path stroke='none' d='M0 0h24v24H0z' fill='none'></path>
 			<path d='M9 4v6l-2 4v2h10v-2l-2 -4v-6'></path>
@@ -3357,13 +3365,13 @@
 			<line x1='8' y1='4' x2='16' y2='4'></line>
 		</svg>
 	</button>
-	<button class='icon-btn' data-action='archive' title='Archive'>
+	<button class='icon-btn' data-action='archive' data-i18n-title='note.archive' title='Archive'>
 		<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L8 13.5l1.41-1.41L11 13.67V10h2v3.67l1.59-1.58L16 13.5l-4 4zM5.12 5l.83-1h12.1l.83 1H5.12z"/></svg>
 	</button>
-	<button class='icon-btn' data-action='share' title='Share'>
+	<button class='icon-btn' data-action='share' data-i18n-title='note.share' title='Share'>
 		<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/></svg>
 	</button>
-	<button class='icon-btn btn-danger' data-action='delete' title='Delete Note'>
+	<button class='icon-btn btn-danger' data-action='delete' data-i18n-title='note.deleteNote' title='Delete Note'>
 		<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'>
 			<path d='M0 0h24v24H0V0z' fill='none' />
 			<path d='M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z' />
@@ -3375,15 +3383,15 @@
 	<!-- Alert Box -->
 	<div id='custom-alert-box' class='custom-modal-box'>
 		<p id='custom-alert-message'></p>
-		<button id='custom-alert-ok-btn' class='btn'>OK</button>
+		<button id='custom-alert-ok-btn' class='btn' data-i18n='modal.ok'>OK</button>
 	</div>
 
 	<!-- Confirm Box -->
 	<div id='custom-confirm-box' class='custom-modal-box'>
 		<p id='custom-confirm-message'></p>
 		<div class='custom-modal-actions'>
-			<button id='custom-confirm-cancel-btn' class='btn btn-secondary'>Cancel</button>
-			<button id='custom-confirm-ok-btn' class='btn btn-danger'>Delete</button>
+			<button id='custom-confirm-cancel-btn' class='btn btn-secondary' data-i18n='modal.cancel'>Cancel</button>
+			<button id='custom-confirm-ok-btn' class='btn btn-danger' data-i18n='modal.delete'>Delete</button>
 		</div>
 	</div>
 
@@ -3393,12 +3401,12 @@
 		<div style="margin: 1rem 0; text-align: left; font-size: 0.9rem;">
 			<label style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
 				<input type="checkbox" id="merge-add-separator" checked style="margin-right: 0.5rem;">
-				Add separator line (---) between notes
+				<span data-i18n='merge.separator'>Add separator line (---) between notes</span>
 			</label>
 		</div>
 		<div class='custom-modal-actions'>
-			<button id='merge-confirm-cancel-btn' class='btn btn-secondary'>Cancel</button>
-			<button id='merge-confirm-ok-btn' class='btn btn-primary'>Merge</button>
+			<button id='merge-confirm-cancel-btn' class='btn btn-secondary' data-i18n='modal.cancel'>Cancel</button>
+			<button id='merge-confirm-ok-btn' class='btn btn-primary' data-i18n='merge.button'>Merge</button>
 		</div>
 	</div>
 </div>
@@ -3419,8 +3427,8 @@
 	<div id='fullscreen-editor-box' class='custom-modal-box'>
 		<header id='editor-toolbar'>
 			<div class='toolbar-left'>
-				<select id='fs-fontsize-selector' class='toolbar-selector toolbar-btn' title='Font Size'>
-					<option value=''>Size</option>
+				<select id='fs-fontsize-selector' class='toolbar-selector toolbar-btn' data-i18n-title='fs.fontSize' title='Font Size'>
+					<option value='' data-i18n='fs.fontSize'>Size</option>
 					<option style='font-size: 12px;' value='12px'>12</option>
 					<option style='font-size: 14px;' value='14px'>14</option>
 					<option style='font-size: 16px;' value='16px'>16</option>
@@ -3432,7 +3440,7 @@
 				</select>
 
 				<div id='fs-color-picker-wrapper' style='position: relative;'>
-					<button id='fs-fontcolor-btn' class='toolbar-btn' title='Font Color'>
+					<button id='fs-fontcolor-btn' class='toolbar-btn' data-i18n-title='fs.fontColor' title='Font Color'>
 							<span
 								style='display: inline-block; width: 1em; height: 1em; border: 1px solid transparent; background-color: var(--fs-editor-color, #333); border-radius: 3px; vertical-align: middle;'></span>
 					</button>
@@ -3441,33 +3449,33 @@
 						</div>
 					</div>
 				</div>
-				<button class='toolbar-btn' data-md='bold' title='Bold (Ctrl+B)'><b>B</b></button>
-				<button class="toolbar-btn" data-md="underline" title="Underline"><u>U</u></button>
-				<button class='toolbar-btn' data-md='italic' title='Italic (Ctrl+I)'><i>I</i></button>
-				<button class='toolbar-btn' data-md='strike' title='Strikethrough'><s>S</s></button>
-				<button class='toolbar-btn' data-md='link' title='Insert Link (Ctrl+K)'>Link</button>
-				<button class='toolbar-btn' data-md='image' title='Insert Image'>Img</button>
-				<button class='toolbar-btn' data-md='blockquote' title='Blockquote'>>_</button>
-				<button class="toolbar-btn" data-md="ulist" title="Unordered List">
+				<button class='toolbar-btn' data-md='bold' data-i18n-title='fs.bold' title='Bold (Ctrl+B)'><b>B</b></button>
+				<button class="toolbar-btn" data-md="underline" data-i18n-title="fs.underline" title="Underline"><u>U</u></button>
+				<button class='toolbar-btn' data-md='italic' data-i18n-title='fs.italic' title='Italic (Ctrl+I)'><i>I</i></button>
+				<button class='toolbar-btn' data-md='strike' data-i18n-title='fs.strike' title='Strikethrough'><s>S</s></button>
+				<button class='toolbar-btn' data-md='link' data-i18n-title='fs.link' title='Insert Link (Ctrl+K)'>Link</button>
+				<button class='toolbar-btn' data-md='image' data-i18n-title='fs.image' title='Insert Image'>Img</button>
+				<button class='toolbar-btn' data-md='blockquote' data-i18n-title='fs.blockquote' title='Blockquote'>>_</button>
+				<button class="toolbar-btn" data-md="ulist" data-i18n-title="fs.ulist" title="Unordered List">
 					<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px" fill="currentColor">
 						<path d="M0 0h24v24H0V0z" fill="none"/>
 						<path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6s-.67-1.5-1.5-1.5zm0 12c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/>
 					</svg>
 				</button>
-				<button class='toolbar-btn' data-md='code' title='Insert Code Block'>Code</button>
+				<button class='toolbar-btn' data-md='code' data-i18n-title='fs.code' title='Insert Code Block'>Code</button>
 			</div>
 			<div class='toolbar-right'>
-				<label class="timestamp-toggle-label" id="fs-timestamp-label" title="If unchecked, the note's timestamp will be updated upon saving.">
+				<label class="timestamp-toggle-label" id="fs-timestamp-label" data-i18n-title='fs.keepTimeTitle' title="If unchecked, the note's timestamp will be updated upon saving.">
 					<input type="checkbox" id="fs-update-timestamp-toggle">
-					<span>Keep Time</span>
+					<span data-i18n='fs.keepTime'>Keep Time</span>
 				</label>
-				<button id='view-mode-split-btn' class='icon-btn' title='Split View'>
+				<button id='view-mode-split-btn' class='icon-btn' data-i18n-title='fs.splitView' title='Split View'>
 					<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'>
 						<path d='M0 0h24v24H0V0z' fill='none' />
 						<path d='M3 15h8v-2H3v2zm0 4h8v-2H3v2zm0-8h8V9H3v2zm0-6v2h8V5H3zm10 0h8v14h-8V5z' />
 					</svg>
 				</button>
-				<button id='view-mode-preview-btn' class='icon-btn' title='Preview'>
+				<button id='view-mode-preview-btn' class='icon-btn' data-i18n-title='fs.preview' title='Preview'>
 					<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' stroke-width='2'
 							 stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'>
 						<path stroke='none' d='M0 0h24v24H0z' fill='none' />
@@ -3476,8 +3484,8 @@
 					</svg>
 				</button>
 
-				<button id='fs-save-btn' class='btn btn-primary'>Save</button>
-				<button id='fs-cancel-btn' class='btn btn-secondary'>Cancel</button>
+				<button id='fs-save-btn' class='btn btn-primary' data-i18n='fs.save'>Save</button>
+				<button id='fs-cancel-btn' class='btn btn-secondary' data-i18n='fs.cancel'>Cancel</button>
 			</div>
 		</header>
 		<div id='editor-content-area'>
@@ -3490,7 +3498,7 @@
 </div>
 
 <!-- 返回顶部 -->
-<button id='back-to-top-btn' title='Back to top'>
+<button id='back-to-top-btn' data-i18n-title='backToTop' title='Back to top'>
 	<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='#FFFFFF'>
 		<path d='M0 0h24v24H0V0z' fill='none' />
 		<path d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z' />
@@ -3501,106 +3509,106 @@
 <div id='settings-modal-overlay' class='custom-modal-overlay'>
 	<div id='settings-modal-box' class='custom-modal-box'>
 		<header class='settings-header'>
-			<h3>Settings</h3>
+			<h3 data-i18n='settings.title'>Settings</h3>
 			<button id='close-settings-btn' class='icon-btn'>&times;</button>
 		</header>
 		<div class='settings-content'>
 			<div class='setting-group'>
-				<h4>Interface Visibility</h4>
+				<h4 data-i18n='settings.interfaceVisibility'>Interface Visibility</h4>
 				<div class='setting-item'>
-					<label for='toggle-search-bar'>Show Search</label>
+					<label for='toggle-search-bar' data-i18n='settings.showSearch'>Show Search</label>
 					<input type='checkbox' id='toggle-search-bar' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-stats-card'>Show Stats</label>
+					<label for='toggle-stats-card' data-i18n='settings.showStats'>Show Stats</label>
 					<input type='checkbox' id='toggle-stats-card' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-calendar'>Show Calendar</label>
+					<label for='toggle-calendar' data-i18n='settings.showCalendar'>Show Calendar</label>
 					<input type='checkbox' id='toggle-calendar' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-heatmap'>Show Heatmap</label>
+					<label for='toggle-heatmap' data-i18n='settings.showHeatmap'>Show Heatmap</label>
 					<input type='checkbox' id='toggle-heatmap' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-tags'>Show Tags</label>
+					<label for='toggle-tags' data-i18n='settings.showTags'>Show Tags</label>
 					<input type='checkbox' id='toggle-tags' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-timeline'>Show Timeline</label>
+					<label for='toggle-timeline' data-i18n='settings.showTimeline'>Show Timeline</label>
 					<input type='checkbox' id='toggle-timeline' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-right-sidebar'>Show Right Sidebar</label>
+					<label for='toggle-right-sidebar' data-i18n='settings.showRightSidebar'>Show Right Sidebar</label>
 					<input type='checkbox' id='toggle-right-sidebar' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-date-grouping'>Enable Date Grouping</label>
+					<label for='toggle-date-grouping' data-i18n='settings.enableDateGrouping'>Enable Date Grouping</label>
 					<input type='checkbox' id='toggle-date-grouping' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-content-truncation'>Enable Content Truncation</label>
+					<label for='toggle-content-truncation' data-i18n='settings.enableContentTruncation'>Enable Content Truncation</label>
 					<input type='checkbox' id='toggle-content-truncation' class='toggle-switch'>
 				</div>
 			</div>
 
 
 			<div class='setting-group'>
-				<h4>Feature Visibility</h4>
+				<h4 data-i18n='settings.featureVisibility'>Feature Visibility</h4>
 				<div class='setting-item'>
-					<label for='toggle-feature-favorites'>Show Favorites</label>
+					<label for='toggle-feature-favorites' data-i18n='settings.showFavorites'>Show Favorites</label>
 					<input type='checkbox' id='toggle-feature-favorites' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-feature-archive'>Show Archive</label>
+					<label for='toggle-feature-archive' data-i18n='settings.showArchive'>Show Archive</label>
 					<input type='checkbox' id='toggle-feature-archive' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-feature-pinning'>Enable Pinning</label>
+					<label for='toggle-feature-pinning' data-i18n='settings.enablePinning'>Enable Pinning</label>
 					<input type='checkbox' id='toggle-feature-pinning' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-feature-sharing'>Enable Sharing</label>
+					<label for='toggle-feature-sharing' data-i18n='settings.enableSharing'>Enable Sharing</label>
 					<input type='checkbox' id='toggle-feature-sharing' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='toggle-feature-docs'>Show Docs Link</label>
+					<label for='toggle-feature-docs' data-i18n='settings.showDocs'>Show Docs Link</label>
 					<input type='checkbox' id='toggle-feature-docs' class='toggle-switch'>
 				</div>
 			</div>
 
 			<div class='setting-group'>
-				<h4>Background</h4>
+				<h4 data-i18n='settings.background'>Background</h4>
 				<div class='setting-item'>
-					<label for='bg-image-url'>Image URL</label>
-					<input type='text' id='bg-image-url' placeholder='Enter image URL...'>
+					<label for='bg-image-url' data-i18n='settings.bgImageUrl'>Image URL</label>
+					<input type='text' id='bg-image-url' data-i18n-placeholder='settings.bgImageUrlPlaceholder' placeholder='Enter image URL...'>
 				</div>
 				<div class='setting-item'>
-					<label for='bg-image-upload'>Or Upload</label>
+					<label for='bg-image-upload' data-i18n='settings.bgUpload'>Or Upload</label>
 					<input type='file' id='bg-image-upload' accept='image/*'>
 				</div>
 				<div class='setting-item'>
-					<label for='bg-blur-slider'>Glass Effect</label>
+					<label for='bg-blur-slider' data-i18n='settings.glassEffect'>Glass Effect</label>
 					<input type='range' id='bg-blur-slider' min='0' max='20' value='0'>
 				</div>
 				<div class='setting-item'>
-					<label for='bg-opacity-slider'>Background Opacity</label>
+					<label for='bg-opacity-slider' data-i18n='settings.bgOpacity'>Background Opacity</label>
 					<input type='range' id='bg-opacity-slider' min='0' max='1' step='0.05' value='1'>
 				</div>
 				<div class='setting-item'>
 					<label></label>
 					<div class='setting-buttons-group'>
-						<button id='restore-bg-btn' class='btn btn-secondary btn-sm'>Restore</button>
-						<button id='clear-bg-btn' class='btn btn-secondary btn-sm'>Clear</button>
+						<button id='restore-bg-btn' class='btn btn-secondary btn-sm' data-i18n='settings.restoreBg'>Restore</button>
+						<button id='clear-bg-btn' class='btn btn-secondary btn-sm' data-i18n='settings.clearBg'>Clear</button>
 					</div>
 				</div>
 			</div>
 
 			<div class='setting-group'>
-				<h4>Surface</h4>
+				<h4 data-i18n='settings.surface'>Surface</h4>
 				<div class='setting-item'>
-					<label for='surface-color-picker-input'>Base Color</label>
+					<label for='surface-color-picker-input' data-i18n='settings.baseColor'>Base Color</label>
 					<div style="display: flex; align-items: center; gap: 0.75rem; position: relative;">
 						<label for='surface-color-picker-input' class='color-picker-label' id='surface-color-picker-label' title="Click to open color picker" style="cursor: pointer;">
 							<div id='surface-color-picker-preview' class='color-picker-preview'></div>
@@ -3612,54 +3620,54 @@
 					</div>
 				</div>
 				<div class='setting-item'>
-					<label for='surface-opacity-slider'>Opacity</label>
+					<label for='surface-opacity-slider' data-i18n='settings.surfaceOpacity'>Opacity</label>
 					<input type='range' id='surface-opacity-slider' min='0' max='1' step='0.05' value='1'>
 				</div>
 				<div class='setting-item'>
 					<label></label>
 					<div class='setting-buttons-group'>
-						<button id='restore-surface-defaults-btn' class='btn btn-secondary btn-sm'>Restore Defaults</button>
+						<button id='restore-surface-defaults-btn' class='btn btn-secondary btn-sm' data-i18n='settings.restoreDefaults'>Restore Defaults</button>
 					</div>
 				</div>
 			</div>
 
 			<div class='setting-group'>
-				<h4>Image Paste Upload</h4>
+				<h4 data-i18n='settings.imagePasteUpload'>Image Paste Upload</h4>
 				<div id='image-upload-options'>
 					<div class='setting-item'>
 						<label for='upload-dest-local'>
 							<input type='radio' id='upload-dest-local' name='upload-destination' value='local' checked>
-							Local (via Worker & R2)
+							<span data-i18n='settings.uploadLocal'>Local (via Worker & R2)</span>
 						</label>
 					</div>
 					<div class='setting-item'>
 						<label for='upload-dest-imgur'>
 							<input type='radio' id='upload-dest-imgur' name='upload-destination' value='imgur'>
-							Imgur (Requires Client ID)
+							<span data-i18n='settings.uploadImgur'>Imgur (Requires Client ID)</span>
 						</label>
 					</div>
 				</div>
 				<div class='setting-item' id='imgur-client-id-wrapper' style='display: flex;'>
-					<label for='imgur-client-id'>Imgur Client ID</label>
-					<input type='text' id='imgur-client-id' placeholder='Enter your Imgur Client ID...'>
+					<label for='imgur-client-id' data-i18n='settings.imgurClientId'>Imgur Client ID</label>
+					<input type='text' id='imgur-client-id' data-i18n-placeholder='settings.imgurClientIdPlaceholder' placeholder='Enter your Imgur Client ID...'>
 				</div>
 			</div>
 			<div class='setting-group'>
-				<h4>Telegram Proxy</h4>
+				<h4 data-i18n='settings.telegramProxy'>Telegram Proxy</h4>
 				<div class='setting-item'>
-					<label for='toggle-telegram-proxy'>Enable Video&File Proxy</label>
+					<label for='toggle-telegram-proxy' data-i18n='settings.enableTelegramProxy'>Enable Video&File Proxy</label>
 					<input type='checkbox' id='toggle-telegram-proxy' class='toggle-switch'>
 				</div>
 			</div>
 
 			<div class='setting-group'>
-				<h4>Waterfall Mode</h4>
+				<h4 data-i18n='settings.waterfallMode'>Waterfall Mode</h4>
 				<div class='setting-item'>
-					<label for='toggle-editor-in-waterfall'>Hide Editor in Waterfall Mode</label>
+					<label for='toggle-editor-in-waterfall' data-i18n='settings.hideEditorInWaterfall'>Hide Editor in Waterfall Mode</label>
 					<input type='checkbox' id='toggle-editor-in-waterfall' class='toggle-switch'>
 				</div>
 				<div class='setting-item'>
-					<label for='waterfall-width-slider'>Card Width (px)</label>
+					<label for='waterfall-width-slider' data-i18n='settings.cardWidth'>Card Width (px)</label>
 					<input type='range' id='waterfall-width-slider' min='200' max='600' step='10' value='320'>
 					<span id='waterfall-width-value'>320px</span>
 				</div>
@@ -3690,49 +3698,49 @@
 <!-- Share Link Modal -->
 <div id='share-link-modal-overlay' class='custom-modal-overlay'>
 	<div id='share-link-modal-box' class='custom-modal-box' style="max-width: 600px; text-align: left;">
-		<h3 style="margin-top:0;">Share Memo</h3>
+		<h3 style="margin-top:0;" data-i18n='shareModal.title'>Share Memo</h3>
 		<div id="share-link-content">
 			<!-- 加载状态 -->
 			<div id="share-link-loader" style="text-align: center; padding: 2rem 0;">
 				<div class="spinner"></div>
-				<p>Generating link...</p>
+				<p data-i18n='shareModal.generating'>Generating link...</p>
 			</div>
 			<!-- 链接内容 -->
 			<div id="share-link-details" style="display: none;">
-				<p>Anyone with these public links can view this memo.</p>
+				<p data-i18n='shareModal.description'>Anyone with these public links can view this memo.</p>
 				<div class="share-link-item" style="margin-bottom: 1rem;">
-					<label style="font-weight: 500;">Display Link</label>
+					<label style="font-weight: 500;" data-i18n='shareModal.displayLink'>Display Link</label>
 					<div style="display: flex; gap: 0.5rem;">
 						<input type="text" id="share-display-link-input" readonly style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color);">
-						<button id="copy-display-link-btn" class="btn">Copy</button>
+						<button id="copy-display-link-btn" class="btn" data-i18n='common.copy'>Copy</button>
 					</div>
 				</div>
 				<div class="share-link-item" style="margin-bottom: 1.5rem;">
-					<label style="font-weight: 500;">Raw Content Link</label>
+					<label style="font-weight: 500;" data-i18n='shareModal.rawLink'>Raw Content Link</label>
 					<div style="display: flex; gap: 0.5rem;">
 						<input type="text" id="share-raw-link-input" readonly style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color);">
-						<button id="copy-raw-link-btn" class="btn">Copy</button>
+						<button id="copy-raw-link-btn" class="btn" data-i18n='common.copy'>Copy</button>
 					</div>
 				</div>
 
 				<div class="share-link-item" style="display: flex; align-items: center; gap: 1rem;">
-					<label for="expiration-select" style="font-weight: 500; flex-shrink: 0;">Expires in:</label>
+					<label for="expiration-select" style="font-weight: 500; flex-shrink: 0;" data-i18n='shareModal.expiresIn'>Expires in:</label>
 					<select id="expiration-select" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color); color: var(--text-color);">
-						<option value="3600">1 Hour</option>
-						<option value="14400">4 Hour</option>
-						<option value="43200">12 Hours</option>
-						<option value="86400">1 Day</option>
-						<option value="604800">7 Days</option>
-						<option value="0">Never</option>
+						<option value="3600" data-i18n='expiration.1hour'>1 Hour</option>
+						<option value="14400" data-i18n='expiration.4hour'>4 Hour</option>
+						<option value="43200" data-i18n='expiration.12hours'>12 Hours</option>
+						<option value="86400" data-i18n='expiration.1day'>1 Day</option>
+						<option value="604800" data-i18n='expiration.7days'>7 Days</option>
+						<option value="0" data-i18n='expiration.never'>Never</option>
 						<option disabled>──────────</option>
-						<option value="revoke">Revoke Now (Expire Immediately)</option>
+						<option value="revoke" data-i18n='expiration.revoke'>Revoke Now (Expire Immediately)</option>
 					</select>
 					<span id="expiration-status" style="font-size: 0.8rem; color: var(--text-secondary); width: 80px; text-align: right;"></span>
 				</div>
 			</div>
 		</div>
 		<div class='custom-modal-actions' style="justify-content: flex-end;">
-			<button id='share-link-close-btn' class='btn btn-secondary'>Close</button>
+			<button id='share-link-close-btn' class='btn btn-secondary' data-i18n='shareModal.close'>Close</button>
 		</div>
 	</div>
 </div>
@@ -3743,6 +3751,8 @@
 </html>
 
 <script>
+	i18n.apply();
+	document.title = i18n.t('common.appName') || 'Memos';
 	// --- 配置 marked.js ---
 	const renderer = new marked.Renderer();
 	const NOTE_TRUNCATE_LENGTH = 800; // 笔记折叠的字数阈值
@@ -3768,7 +3778,7 @@
 		};
 
 		const copyButtonHtml = `
-							<button class='copy-code-btn' data-code='${escapeHtml(code)}' title='Copy code'>
+							<button class='copy-code-btn' data-code='${escapeHtml(code)}' title='${i18n.t('common.copyCode')}'>
 									<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect><path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path></svg>
 							</button>
 					`;
@@ -3830,12 +3840,12 @@
 			const header = document.createElement('div');
 			header.className = 'calendar-header';
 			header.innerHTML = `
-                <button id='calendar-prev' class='calendar-nav-btn' title='Previous month'>◄</button>
-                <span id='calendar-month-year'>${this.currentDate.toLocaleString('en-US', {
+                <button id='calendar-prev' class='calendar-nav-btn' title='${i18n.t('calendar.prev')}'>◄</button>
+                <span id='calendar-month-year'>${this.currentDate.toLocaleString(i18n.getLocale(), {
 				month: 'long',
 				year: 'numeric'
 			})}</span>
-                <button id='calendar-next' class='calendar-nav-btn' title='Next month'>►</button>
+                <button id='calendar-next' class='calendar-nav-btn' title='${i18n.t('calendar.next')}'>►</button>
             `;
 			this.container.appendChild(header);
 			const nextMonthBtn = document.getElementById('calendar-next');
@@ -3846,7 +3856,7 @@
 
 			const grid = document.createElement('div');
 			grid.className = 'calendar-grid';
-			const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+			const dayNames = i18n.getDayNames();
 			dayNames.forEach(name => {
 				const dayNameEl = document.createElement('div');
 				dayNameEl.className = 'calendar-day-name';
@@ -3913,8 +3923,8 @@
 					const dateStr = target.dataset.date;
 					const count = this.dataProvider.get(dateStr) || 0;
 					if (count > 0) {
-						const countText = count === 1 ? '1 note' : `${count} notes`;
-						calendarTooltip.textContent = `${countText} on ${dateStr}`;
+						const countText = count === 1 ? i18n.t('heatmap.oneNote') : i18n.t('heatmap.notes', { count });
+						calendarTooltip.textContent = i18n.t('heatmap.onDate', { countText, date: dateStr });
 						calendarTooltip.style.display = 'block';
 					}
 				});
@@ -4097,9 +4107,9 @@
 			textarea.value = textarea.value.replace(placeholderMarkdown, finalMarkdown);
 		} catch (error) {
 			console.error('Image upload failed:', error);
-			const errorMarkdown = `![Upload Failed: ${error.message}]()`;
+			const errorMarkdown = `![${i18n.t('alert.imageUploadFailed')}: ${error.message}]()`;
 			textarea.value = textarea.value.replace(placeholderMarkdown, errorMarkdown);
-			showCustomAlert(`Image upload failed: ${error.message}`, 'error');
+			showCustomAlert(`${i18n.t('alert.imageUploadFailed')}: ${error.message}`, 'error');
 		} finally {
 			textarea.dispatchEvent(new Event('input', { bubbles: true }));
 		}
@@ -4117,15 +4127,15 @@
 				await navigator.clipboard.writeText(codeToCopy);
 				copyButton.innerHTML = successIcon;
 				copyButton.classList.add('copied');
-				copyButton.title = 'Copied!';
+				copyButton.title = i18n.t('common.copied');
 				setTimeout(() => {
 					copyButton.innerHTML = originalIcon;
 					copyButton.classList.remove('copied');
-					copyButton.title = 'Copy code';
+					copyButton.title = i18n.t('common.copyCode');
 				}, 2000);
 			} catch (err) {
 				console.error('Failed to copy text: ', err);
-				copyButton.title = 'Copy failed!';
+				copyButton.title = i18n.t('common.copyFailed');
 			}
 		}
 	});
@@ -4168,7 +4178,7 @@
 			if (!response.ok) throw new Error('Failed to save settings to server');
 		} catch (error) {
 			console.error("Could not save settings:", error);
-			showCustomAlert(`Error saving settings: ${error.message}`, 'error');
+			showCustomAlert(`${i18n.t('alert.settingsSaveError')}: ${error.message}`, 'error');
 		}
 	}
 	// --- 全局应用状态 ---
@@ -4317,6 +4327,8 @@
 	const moreActionsContainer = document.getElementById('more-actions-container');
 	const moreActionsBtn = document.getElementById('more-actions-btn');
 	const moreMenuPopover = document.getElementById('more-menu-popover');
+	const langToggleBtn = document.getElementById('lang-toggle-btn');
+	const loginLangToggleBtn = document.getElementById('login-lang-toggle-btn');
 	const notePopoverMenu = document.getElementById('note-popover-menu');
 	let popoverHoverTimer = null;
 	let waterfallPopoverHideTimer = null;
@@ -4331,15 +4343,31 @@
 	const expirationStatus = document.getElementById('expiration-status');
 	let currentPublicId = null;
 
+	function refreshLocalizedDynamicUI() {
+		i18n.apply();
+		if (calendarInstance) calendarInstance.render();
+		loadAndRenderTags();
+		loadAndRenderTimeline();
+		if (appState.baseMode === 'attachments' && attachmentsState.isLoaded) fetchAllAttachments(true);
+	}
+
+	function switchLanguage() {
+		i18n.toggleLang();
+		refreshLocalizedDynamicUI();
+	}
+
+	if (langToggleBtn) langToggleBtn.addEventListener('click', switchLanguage);
+	if (loginLangToggleBtn) loginLangToggleBtn.addEventListener('click', switchLanguage);
+
 	expirationSelect.addEventListener('change', async () => {
 		const shareModal = document.getElementById('share-link-modal-overlay');
 		const noteId = shareModal.dataset.noteId;
 		const selectedValue = expirationSelect.value;
 
 		if (selectedValue === 'revoke') {
-			const confirmed = await showCustomConfirm('Are you sure you want to revoke the public links immediately? This action cannot be undone.');
+			const confirmed = await showCustomConfirm(i18n.t('alert.revokeConfirm'));
 			if (confirmed) {
-				expirationStatus.textContent = 'Revoking...';
+				expirationStatus.textContent = i18n.t('shareModal.revoking');
 				expirationSelect.disabled = true;
 				try {
 					const response = await fetch(`/api/notes/${noteId}/share`, { method: 'DELETE' });
@@ -4348,10 +4376,10 @@
 						throw new Error(err.error || 'Failed to revoke share link.');
 					}
 					closeShareModal();
-					showCustomAlert('Sharing has been successfully revoked.', 'info');
+					showCustomAlert(i18n.t('shareModal.revoked'), 'info');
 				} catch (error) {
-					showCustomAlert(`Error: ${error.message}`, 'error');
-					expirationStatus.textContent = 'Error!';
+					showCustomAlert(`${i18n.t('common.error')}: ${error.message}`, 'error');
+					expirationStatus.textContent = i18n.t('common.error');
 				} finally {
 					expirationSelect.disabled = false;
 				}
@@ -4364,7 +4392,7 @@
 
 		if (!noteId || !currentPublicId) return;
 
-		expirationStatus.textContent = 'Updating...';
+		expirationStatus.textContent = i18n.t('shareModal.updating');
 		expirationSelect.disabled = true;
 
 		try {
@@ -4382,14 +4410,14 @@
 				throw new Error(err.error || 'Failed to update expiration.');
 			}
 
-			expirationStatus.textContent = 'Updated!';
+			expirationStatus.textContent = i18n.t('shareModal.updated');
 			setTimeout(() => {
 				expirationStatus.textContent = '';
 			}, 2000);
 
 		} catch (error) {
-			expirationStatus.textContent = 'Error!';
-			showCustomAlert(`Error: ${error.message}`, 'error');
+			expirationStatus.textContent = i18n.t('common.error');
+			showCustomAlert(`${i18n.t('common.error')}: ${error.message}`, 'error');
 		} finally {
 			expirationSelect.disabled = false;
 		}
@@ -4414,13 +4442,13 @@
 		try {
 			await navigator.clipboard.writeText(inputElement.value);
 			const originalText = buttonElement.textContent;
-			buttonElement.textContent = 'Copied!';
+			buttonElement.textContent = i18n.t('common.copied');
 			setTimeout(() => {
 				buttonElement.textContent = originalText;
 			}, 2000);
 		} catch (err) {
 			console.error('Failed to copy text: ', err);
-			showCustomAlert('Failed to copy link.', 'error');
+			showCustomAlert(i18n.t('shareModal.copyFailed'), 'error');
 		}
 	}
 
@@ -4446,7 +4474,7 @@
 			// 在归档视图下，只可能显示 "Unarchive"
 			archiveBtn.style.display = settings.showArchive ? '' : 'none'; // 同样要尊重设置
 			archiveBtn.classList.add('unarchive-mode');
-			archiveBtn.title = 'Unarchive';
+			archiveBtn.title = i18n.t('note.unarchive');
 			archiveBtn.dataset.action = 'unarchive';
 
 			// 强制隐藏其他不相关的按钮
@@ -4456,7 +4484,7 @@
 			// 在常规视图下（Home, Favorites）
 			archiveBtn.style.display = settings.showArchive ? '' : 'none';
 			archiveBtn.classList.remove('unarchive-mode');
-			archiveBtn.title = 'Archive';
+			archiveBtn.title = i18n.t('note.archive');
 			archiveBtn.dataset.action = 'archive';
 
 			// 只有在设置开启时，才显示收藏和置顶按钮
@@ -4467,11 +4495,11 @@
 			if (noteData) {
 				if (settings.showFavorites) {
 					favoriteBtn.classList.toggle('favorited', noteData.is_favorited);
-					favoriteBtn.title = noteData.is_favorited ? 'Unfavorite' : 'Favorite';
+					favoriteBtn.title = noteData.is_favorited ? i18n.t('note.unfavorite') : i18n.t('note.favorite');
 				}
 				if (settings.enablePinning) {
 					pinBtn.classList.toggle('pinned', noteData.is_pinned);
-					pinBtn.title = noteData.is_pinned ? 'Unpin' : 'Pin';
+					pinBtn.title = noteData.is_pinned ? i18n.t('note.unpin') : i18n.t('note.pin');
 				}
 			}
 		}
@@ -4522,7 +4550,7 @@
 					const res = await fetch(`/api/notes/${noteId}`, { method: 'PUT', body: formData });
 					if (!res.ok) throw new Error('Failed to update favorite status.');
 					actionButton.classList.toggle('favorited', newFavoriteState);
-					actionButton.title = newFavoriteState ? 'Unfavorite' : 'Favorite';
+					actionButton.title = newFavoriteState ? i18n.t('note.unfavorite') : i18n.t('note.favorite');
 					const noteInCache = allNotesCache.find(n => n.id === parseInt(noteId));
 					if (noteInCache) noteInCache.is_favorited = newFavoriteState;
 				} catch (error) {
@@ -4540,9 +4568,9 @@
 				formData.append('isPinned', newPinState.toString());
 				try {
 					const res = await fetch(`/api/notes/${noteId}`, { method: 'PUT', body: formData });
-					if (!res.ok) throw new Error('Failed to update pin status.');
+					if (!res.ok) throw new Error(i18n.t('alert.failed') + ': ' + (await res.text()));
 					actionButton.classList.toggle('pinned', newPinState);
-					actionButton.title = newPinState ? 'Unpin' : 'Pin';
+					actionButton.title = newPinState ? i18n.t('note.unpin') : i18n.t('note.pin');
 					const noteInCache = allNotesCache.find(n => n.id === parseInt(noteId));
 					if (noteInCache) noteInCache.is_pinned = newPinState;
 					await refreshNotes();
@@ -4623,7 +4651,7 @@
 			}
 			case 'delete': {
 				if (!noteElement) return;
-				const confirmed = await showCustomConfirm('Are you sure you want to delete this note?');
+				const confirmed = await showCustomConfirm(i18n.t('alert.deleteNoteConfirm'));
 				if (!confirmed) return;
 				waterfallObserver.unobserve(noteElement);
 				try {
@@ -4744,7 +4772,7 @@
 		attachmentsState.isLoading = true;
 		const loader = document.createElement('div');
 		loader.className = 'loading-indicator';
-		loader.textContent = 'Loading...';
+		loader.textContent = i18n.t('common.loading');
 		attachmentsContent.appendChild(loader);
 
 		if (isInitialLoad) {
@@ -4768,7 +4796,7 @@
 			attachmentsState.currentPage++;
 		} catch (error) {
 			console.error(error);
-			attachmentsContent.innerHTML = '<p>Failed to load attachments.</p>';
+			attachmentsContent.innerHTML = `<p>${i18n.t('attachments.loadFailed')}</p>`;
 		} finally {
 			attachmentsState.isLoading = false;
 			const existingLoader = attachmentsContent.querySelector('.loading-indicator');
@@ -4790,13 +4818,13 @@
 		});
 
 		if (isInitialLoad && filteredData.length === 0 && !attachmentsState.hasMore) {
-			attachmentsContent.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No items to display.</p>';
+			attachmentsContent.innerHTML = `<p style="text-align: center; color: var(--text-secondary);">${i18n.t('attachments.empty')}</p>`;
 			return;
 		}
 
 		const groupedByMonth = attachmentsState.allData.reduce((acc, item) => {
 			const date = new Date(item.timestamp);
-			const monthKey = date.toLocaleString('en-US', { year: 'numeric', month: 'long' });
+			const monthKey = date.toLocaleString(i18n.getLocale(), { year: 'numeric', month: 'long' });
 			if (!acc[monthKey]) acc[monthKey] = [];
 			acc[monthKey].push(item);
 			return acc;
@@ -4816,19 +4844,19 @@
 		// 只将新获取的数据项添加到对应的网格中
 		filteredData.forEach(item => {
 			const date = new Date(item.timestamp);
-			const monthKey = date.toLocaleString('en-US', { year: 'numeric', month: 'long' });
+			const monthKey = date.toLocaleString(i18n.getLocale(), { year: 'numeric', month: 'long' });
 			const gridEl = document.getElementById(`month-${monthKey.replace(/\s/g, '-')}`).querySelector('.attachments-grid');
 			const itemLink = document.createElement('a');
 			itemLink.dataset.noteId = item.noteId;
 			let shareButtonHTML = '', deleteButtonHTML = '';
 			if (item.type === 'file' && item.id) {
 				shareButtonHTML = `
-                <button class="share-file-btn icon-btn" title="Get public link" data-note-id="${item.noteId}" data-file-id="${item.id}">
+                <button class="share-file-btn icon-btn" title="${i18n.t('attachments.getPublicLink')}" data-note-id="${item.noteId}" data-file-id="${item.id}">
                     <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/></svg>
                 </button>
             `;
 				deleteButtonHTML = `
-                <button class="delete-file-btn icon-btn" title="Delete file" data-note-id="${item.noteId}" data-file-id="${item.id}">
+                <button class="delete-file-btn icon-btn" title="${i18n.t('attachments.deleteFile')}" data-note-id="${item.noteId}" data-file-id="${item.id}">
                     <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
                 </button>
                 `;
@@ -4837,7 +4865,7 @@
 				itemLink.href = item.url;
 				itemLink.className = 'attachment-item attachment-item-image';
 				itemLink.dataset.previewable = true;
-				itemLink.innerHTML = `<img src="${item.url}" loading="lazy" class="preview" alt="Image from note ${item.noteId}">`;
+				itemLink.innerHTML = `<img src="${item.url}" loading="lazy" class="preview" alt="${i18n.t('attachments.imageAlt', { noteId: item.noteId })}">`;
 				gridEl.appendChild(itemLink);
 			} else if (item.type === 'video') {
 				const itemContainer = document.createElement('div');
@@ -4908,7 +4936,7 @@
 		} else if (videoContainer) {
 			const videoUrl = videoContainer.dataset.url;
 			const noteId = videoContainer.dataset.noteId;
-			openVideoPreview(videoUrl, `Video from note ${noteId}`);
+			openVideoPreview(videoUrl, i18n.t('attachments.videoAlt', { noteId }));
 		}
 
 		const shareBtn = e.target.closest('.share-file-btn');
@@ -4936,12 +4964,12 @@
 
 				shareBtn.innerHTML = successIcon;
 				shareBtn.classList.add('copied');
-				shareBtn.title = 'Copied!';
+				shareBtn.title = i18n.t('common.copied');
 
 				setTimeout(() => {
 					shareBtn.innerHTML = originalIcon;
 					shareBtn.classList.remove('copied');
-					shareBtn.title = 'Get public link';
+					shareBtn.title = i18n.t('attachments.getPublicLink');
 					shareBtn.disabled = false;
 				}, 2000);
 
@@ -4960,7 +4988,7 @@
 			const noteId = deleteBtn.dataset.noteId;
 			const fileId = deleteBtn.dataset.fileId;
 
-			const confirmed = await showCustomConfirm('Are you sure you want to permanently delete this file? This action cannot be undone.');
+			const confirmed = await showCustomConfirm(i18n.t('alert.deleteFileConfirm'));
 			if (!confirmed) return;
 
 			const attachmentItem = deleteBtn.closest('.attachment-item');
@@ -4993,14 +5021,14 @@
 					attachmentsContent.querySelectorAll(`.attachment-item a[data-note-id="${noteId}"]`).forEach(el => el.closest('.attachment-item').remove());
 					attachmentsState.allData = attachmentsState.allData.filter(item => item.noteId != noteId);
 					allNotesCache = allNotesCache.filter(n => n.id !== parseInt(noteId));
-					showToast('File and empty note removed.', 'info');
+					showToast(i18n.t('toast.fileRemoved'), 'info');
 				} else {
 					attachmentItem.remove();
 					attachmentsState.allData = attachmentsState.allData.filter(item => !(item.noteId == noteId && item.id == fileId));
 					if (originalNote) {
 						originalNote.files = originalNote.files.filter(f => f.id !== fileId);
 					}
-					showToast('File deleted successfully.');
+					showToast(i18n.t('toast.fileDeleted'));
 				}
 
 			} catch (error) {
@@ -5163,10 +5191,10 @@
 				// 处理加载更多的UI
 				if (!data.hasMore) {
 					if (allNotesCache.length > 0) {
-						scrollLoader.textContent = 'No more notes.';
+						scrollLoader.textContent = i18n.t('empty.noMore');
 						scrollLoader.style.display = 'block';
 					} else {
-						notesContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 1rem 0;">Nothing here yet.</div>';
+						notesContainer.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 1rem 0;">${i18n.t('empty.nothing')}</div>`;
 						scrollLoader.style.display = 'none';
 					}
 				}
@@ -5179,7 +5207,7 @@
 			}
 		} catch (error) {
 			console.error('Initialization failed:', error);
-			document.body.innerHTML = 'Failed to initialize the application. Please check your connection and try again.';
+			document.body.innerHTML = i18n.t('alert.initFailed');
 		} finally {
 			document.body.classList.remove('loading');
 			const initialLoader = document.getElementById('initial-loader');
@@ -5786,7 +5814,7 @@
 
 			case 'delete': {
 				if (!noteElement) return;
-				const confirmed = await showCustomConfirm('Are you sure you want to delete this note?');
+				const confirmed = await showCustomConfirm(i18n.t('alert.deleteNoteConfirm'));
 				if (!confirmed) return;
 
 				// 复用现有的删除逻辑
@@ -5988,7 +6016,7 @@
 
 		} catch (error) {
 			console.error('Error loading heatmap:', error);
-			heatmapContainerWrapper.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-secondary);">Could not load activity data.</p>';
+			heatmapContainerWrapper.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-secondary);">${i18n.t('alert.heatmapLoadFailed')}</p>`;
 		}
 	}
 
@@ -5998,9 +6026,9 @@
 		if (dayElement) {
 			const date = dayElement.dataset.date;
 			const count = dayElement.dataset.count;
-			const countText = count === '1' ? '1 note' : `${count} notes`;
+			const countText = count === '1' ? i18n.t('heatmap.oneNote') : i18n.t('heatmap.notes', { count });
 
-			heatmapTooltip.textContent = `${countText} on ${date}`;
+			heatmapTooltip.textContent = i18n.t('heatmap.onDate', { countText, date });
 			heatmapTooltip.style.display = 'block';
 		}
 	});
@@ -6350,17 +6378,17 @@
 	fsSaveBtn.addEventListener('click', async () => {
 		const content = fsEditorTextarea.value;
 		fsSaveBtn.disabled = true;
-		fsSaveBtn.textContent = 'Saving...';
+		fsSaveBtn.textContent = i18n.t('common.saving');
 
 		try {
 			if (currentEditingNoteId === null) {
 				const content = fsEditorTextarea.value;
 				// 檢查內容和文件是否都為空
 				if (!content.trim() && noteFile.files.length === 0) {
-					showCustomAlert('Content or a file is required.', 'error');
+					showCustomAlert(i18n.t('alert.contentRequired'), 'error');
 					// 恢復按鈕狀態
 					fsSaveBtn.disabled = false;
-					fsSaveBtn.textContent = 'Save';
+					fsSaveBtn.textContent = i18n.t('common.save');
 					return; // 提前返回
 				}
 
@@ -6374,7 +6402,7 @@
 
 				try {
 					const res = await fetch('/api/notes', { method: 'POST', body: formData });
-					if (!res.ok) throw new Error(`Save failed: ${await res.text()}`);
+					if (!res.ok) throw new Error(`${i18n.t('common.failed')}: ${await res.text()}`);
 
 					noteForm.reset(); // 使用 reset() 可以同時清空文本和文件輸入
 					updateMainFileDisplay(); // 更新主界面的文件列表顯示
@@ -6385,18 +6413,18 @@
 					showCustomAlert(error.message, 'error');
 				} finally {
 					fsSaveBtn.disabled = false;
-					fsSaveBtn.textContent = 'Save';
+					fsSaveBtn.textContent = i18n.t('common.save');
 				}
 
 			} else { // 编辑现有笔记
 				const noteElement = notesContainer.querySelector(`.note[data-id="${currentEditingNoteId}"]`);
 				if (!noteElement) {
-					showCustomAlert('Error: Original note element not found.', 'error');
+					showCustomAlert(i18n.t('alert.originalNotFound'), 'error');
 					return;
 				}
 
 				fsSaveBtn.disabled = true;
-				fsSaveBtn.textContent = 'Saving...';
+				fsSaveBtn.textContent = i18n.t('common.saving');
 				const formData = new FormData();
 				// 1. 添加从全屏编辑器获取的新内容
 				formData.append('content', content);
@@ -6417,7 +6445,7 @@
 
 				try {
 					const res = await fetch(`/api/notes/${currentEditingNoteId}`, { method: 'PUT', body: formData });
-					if (!res.ok) throw new Error(`Update failed: ${await res.text()}`);
+					if (!res.ok) throw new Error(`${i18n.t('common.failed')}: ${await res.text()}`);
 
 					closeFullscreenEditor();
 					await refreshNotes(); // 刷新列表以显示最新内容
@@ -6425,14 +6453,14 @@
 					showCustomAlert(error.message, 'error');
 				} finally {
 					fsSaveBtn.disabled = false;
-					fsSaveBtn.textContent = 'Save';
+					fsSaveBtn.textContent = i18n.t('common.save');
 				}
 			}
 		} catch (error) {
 			showCustomAlert(error.message, 'error');
 		} finally {
 			fsSaveBtn.disabled = false;
-			fsSaveBtn.textContent = 'Save';
+			fsSaveBtn.textContent = i18n.t('common.save');
 		}
 	});
 
@@ -6450,6 +6478,8 @@
 		const moonIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2c-1.82 0-3.53.5-5 1.35C7.99 5.08 10 8.3 10 12s-2.01 6.92-5 8.65C6.47 21.5 8.18 22 10 22c5.52 0 10-4.48 10-10S15.52 2 10 2z">' +
 			'</path></svg><span>Dark Mode</span>';
 		themeToggleBtn.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
+		const themeLabel = themeToggleBtn.querySelector('span');
+		if (themeLabel) themeLabel.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
 		document.getElementById('hljs-light-theme').disabled = (theme === 'dark');
 		document.getElementById('hljs-dark-theme').disabled = (theme !== 'dark');
 		applySettings();
@@ -6726,7 +6756,7 @@
 
 			const updatedMergedNote = await response.json();
 
-			showToast('Notes merged successfully!');
+			showToast(i18n.t('toast.mergeSuccess'));
 			await refreshNotes();
 
 		} catch (error) {
@@ -7210,7 +7240,7 @@
 		const btn = document.getElementById('login-btn');
 		const err = document.getElementById('login-error');
 		btn.disabled = true;
-		btn.textContent = 'Logging in...';
+		btn.textContent = i18n.t('common.saving');
 		err.textContent = '';
 		try {
 			const res = await fetch('/api/login', {
@@ -7218,13 +7248,13 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ username: username.value, password: password.value })
 			});
-			if (!res.ok) throw new Error('Invalid username or password.');
+			if (!res.ok) throw new Error(i18n.t('login.error'));
 			initializeApp();
 		} catch (error) {
 			err.textContent = error.message;
 		} finally {
 			btn.disabled = false;
-			btn.textContent = 'Login';
+			btn.textContent = i18n.t('login.button');
 		}
 	});
 
@@ -7242,7 +7272,7 @@
 		const isAppending = page > 1;
 		const currentLoader = isAppending ? scrollLoader : refreshLoader;
 		if (isAppending) {
-			currentLoader.textContent = 'Loading more...';
+			currentLoader.textContent = i18n.t('common.loadingMore');
 		}
 		currentLoader.style.display = isAppending ? 'block' : 'flex';
 		try {
@@ -7289,15 +7319,15 @@
 				scrollLoader.style.display = 'none';
 			} else {
 				if (allNotesCache.length > 0) {
-					scrollLoader.textContent = 'No more notes.';
+					scrollLoader.textContent = i18n.t('empty.noMore');
 					scrollLoader.style.display = 'block';
 				} else {
-					notesContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 1rem 0;">Nothing here yet.</div>';
+					notesContainer.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 1rem 0;">${i18n.t('empty.nothing')}</div>`;
 					scrollLoader.style.display = 'none';
 				}
 			}
 		} catch (error) {
-			currentLoader.textContent = `Failed to load: ${error.message}`;
+			currentLoader.textContent = i18n.t('alert.loadFailed', { message: error.message });
 		} finally {
 			appState.pagination.isLoading = false;
 			refreshLoader.style.display = 'none';
@@ -7343,7 +7373,7 @@
 		// 	editedIndicatorHtml = ` ·&nbsp;<span class="note-edited-indicator" title="Edited at: ${editedTime.absolute}">edited</span>`;
 		// }
 		const pinnedIconHTML = note.is_pinned ? `
-				<button class='unpin-btn icon-btn pinned' title='Unpin'>
+				<button class='unpin-btn icon-btn pinned' data-i18n-title='note.unpin' title='${i18n.t('note.unpin')}'>
 						<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='currentColor' stroke-linecap='round' stroke-linejoin='round'>
 								<path stroke='none' d='M0 0h24v24H0z' fill='none'></path>
 								<path d='M9 4v6l-2 4v2h10v-2l-2 -4v-6'></path>
@@ -7358,12 +7388,12 @@
 			note.files.forEach(file => {
 				const fileUrl = `/api/files/${noteId}/${file.id}`;
 				const shareButtonHTML = `
-            <button class="share-file-btn icon-btn" title="Get public link" data-note-id="${noteId}" data-file-id="${file.id}">
+            <button class="share-file-btn icon-btn" data-i18n-title="attachments.getPublicLink" title="${i18n.t('attachments.getPublicLink')}" data-note-id="${noteId}" data-file-id="${file.id}">
                 <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/></svg>
             </button>
         `;
 				const deleteButtonHTML = `
-						<button class="delete-file-btn icon-btn" title="Delete file" data-note-id="${noteId}" data-file-id="${file.id}">
+						<button class="delete-file-btn icon-btn" data-i18n-title="attachments.deleteFile" title="${i18n.t('attachments.deleteFile')}" data-note-id="${noteId}" data-file-id="${file.id}">
 							<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
 						</button>
 					`;
@@ -7400,10 +7430,10 @@
 									</div>
 											<div class='note-actions view-mode'>
 													${pinnedIconHTML}
-													<button class='edit icon-btn' title='Edit'>
+													<button class='edit icon-btn' data-i18n-title='note.edit' title='${i18n.t('note.edit')}'>
 															<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'></path></svg>
 													</button>
-													<button class='more-actions-btn icon-btn' title='More actions'>
+													<button class='more-actions-btn icon-btn' data-i18n-title='note.moreActions' title='${i18n.t('note.moreActions')}'>
 															 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
 													</button>
 											</div>
@@ -7411,36 +7441,36 @@
 <!--													<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none'/><path d='M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/></svg>-->
 <!--											</button>-->
 											<div class='edit-actions edit-mode'>
-													<label class="timestamp-toggle-label" title="If checked, the note's timestamp will not be updated upon saving.">
+													<label class="timestamp-toggle-label" data-i18n-title='note.keepTimeTitle' title="${i18n.t('note.keepTimeTitle')}">
 															<input type="checkbox" class="update-timestamp-toggle" checked>
-															<span>Keep Time</span>
+															<span data-i18n='note.keepTime'>${i18n.t('note.keepTime')}</span>
 													</label>
-													<label class='icon-btn' title='Add files'>
+													<label class='icon-btn' data-i18n-title='note.addFiles' title='${i18n.t('note.addFiles')}'>
 															<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z'></path></svg>
 															<input type='file' class='edit-file-input' multiple style='display:none;'>
 													</label>
-													<button class='md-preview-toggle-btn icon-btn' title='Toggle Preview'>
+													<button class='md-preview-toggle-btn icon-btn' data-i18n-title='editor.togglePreview' title='${i18n.t('editor.togglePreview')}'>
 															<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><circle cx='12' cy='12' r='2' /><path d='M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7' /></svg>
 													</button>
-													<button class='md-split-toggle-btn icon-btn' title='Toggle Split View' style='display: none;'>
+													<button class='md-split-toggle-btn icon-btn' data-i18n-title='editor.toggleSplit' title='${i18n.t('editor.toggleSplit')}' style='display: none;'>
 															<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none'></path><path d='M3 15h8v-2H3v2zm0 4h8v-2H3v2zm0-8h8V9H3v2zm0-6v2h8V5H3zm10 0h8v14h-8V5z'></path></svg>
 													</button>
-													<button class='fullscreen-edit icon-btn' title='Fullscreen Edit'>
+													<button class='fullscreen-edit icon-btn' data-i18n-title='note.fullscreenEdit' title='${i18n.t('note.fullscreenEdit')}'>
 															<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z'></path></svg>
 													</button>
-													<button class='save-edit icon-btn btn-accent' title='Save'>
+													<button class='save-edit icon-btn btn-accent' data-i18n-title='common.save' title='${i18n.t('common.save')}'>
 															<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'></path></svg>
 													</button>
-													<button class='cancel-edit icon-btn' title='Cancel'>
+													<button class='cancel-edit icon-btn' data-i18n-title='common.cancel' title='${i18n.t('common.cancel')}'>
 															<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z'></path></svg>
 													</button>
 											</div>
 									</div>
 									<div class='note-content view-mode'></div>
 									${attachmentsHTML}
-    							<button class='toggle-content-btn'>Show more</button>
+    							<button class='toggle-content-btn' data-i18n='note.showMore'>${i18n.t('note.showMore')}</button>
 									<div class='edit-area edit-mode'>
-											<textarea class='edit-textarea' placeholder='Memos here...'></textarea>
+											<textarea class='edit-textarea' data-i18n-placeholder='note.placeholder' placeholder='${i18n.t('note.placeholder')}'></textarea>
 											<div class='edit-preview note-content'></div>
 									</div>
 
@@ -7478,7 +7508,7 @@
 				// 为置顶区域添加一个标题/分隔符
 				const pinnedHeader = document.createElement('div');
 				pinnedHeader.className = 'pinned-section-header';
-				pinnedHeader.textContent = 'Pinned';
+				pinnedHeader.textContent = i18n.t('note.pinned');
 				pinnedContainer.appendChild(pinnedHeader);
 
 				// 循环渲染所有置顶笔记
@@ -7491,7 +7521,7 @@
 				fragment.appendChild(pinnedContainer);
 			}
 
-			const dateFormatter = new Intl.DateTimeFormat('en-CA', {
+			const dateFormatter = new Intl.DateTimeFormat(i18n.getLocale(), {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit',
@@ -7823,11 +7853,11 @@
 
 	noteForm.addEventListener('submit', async e => {
 		e.preventDefault();
-		if (!noteInput.value.trim() && noteFile.files.length === 0) return showCustomAlert('Content or a file is required.', 'error');
+		if (!noteInput.value.trim() && noteFile.files.length === 0) return showCustomAlert(i18n.t('alert.contentRequired'), 'error');
 
 		const btn = e.target.querySelector('button[type="submit"]');
 		btn.disabled = true;
-		btn.textContent = 'Saving...';
+		btn.textContent = i18n.t('common.saving');
 
 		const formData = new FormData();
 		formData.append('content', noteInput.value);
@@ -7850,7 +7880,7 @@
 			showCustomAlert(error.message, 'error');
 		} finally {
 			btn.disabled = false;
-			btn.textContent = 'Save';
+			btn.textContent = i18n.t('common.save');
 		}
 	});
 
@@ -7934,9 +7964,9 @@
 			if (noteElement) {
 				noteElement.classList.toggle('is-expanded');
 				if (noteElement.classList.contains('is-expanded')) {
-					target.textContent = 'Collapse';
+					target.textContent = i18n.t('note.collapse');
 				} else {
-					target.textContent = 'Show more';
+					target.textContent = i18n.t('note.showMore');
 				}
 			}
 			return;
@@ -7966,12 +7996,12 @@
 
 				shareBtn.innerHTML = successIcon;
 				shareBtn.classList.add('copied');
-				shareBtn.title = 'Copied!';
+				shareBtn.title = i18n.t('common.copied');
 
 				setTimeout(() => {
 					shareBtn.innerHTML = originalIcon;
 					shareBtn.classList.remove('copied');
-					shareBtn.title = 'Get public link';
+					shareBtn.title = i18n.t('attachments.getPublicLink');
 					shareBtn.disabled = false;
 				}, 2000);
 
@@ -7991,7 +8021,7 @@
 			const noteId = deleteBtn.dataset.noteId;
 			const fileId = deleteBtn.dataset.fileId;
 
-			const confirmed = await showCustomConfirm('Are you sure you want to permanently delete this file? This action cannot be undone.');
+			const confirmed = await showCustomConfirm(i18n.t('alert.deleteFileConfirm'));
 			if (!confirmed) return;
 
 			const attachmentElement = deleteBtn.closest('.attachment-link, .attachment-img');
@@ -8021,13 +8051,13 @@
 				if (result.noteDeleted) {
 					noteElement.remove(); // 直接删除DOM元素
 					allNotesCache = allNotesCache.filter(n => n.id !== parseInt(noteId));
-					showToast('File and empty note removed.', 'info');
+					showToast(i18n.t('toast.fileRemoved'), 'info');
 				} else {
 					attachmentElement.remove();
 					if (currentNote) {
 						currentNote.files = currentNote.files.filter(f => f.id !== fileId);
 					}
-					showToast('File deleted successfully.');
+					showToast(i18n.t('toast.fileDeleted'));
 				}
 
 			} catch (error) {
@@ -8404,7 +8434,7 @@
 
 		} catch (error) {
 			console.error('Error loading timeline:', error);
-			timelineContainer.innerHTML = '<p>Error loading timeline.</p>';
+			timelineContainer.innerHTML = `<p>${i18n.t('alert.timelineLoadFailed')}</p>`;
 		}
 	}
 
@@ -8531,7 +8561,7 @@
 			const listElement = tagsContainer.querySelector('ul');
 
 			if (tags.length === 0) {
-				listElement.innerHTML = '<li><div class="tag-item-placeholder">No tags yet.</div></li>';
+				listElement.innerHTML = `<li><div class="tag-item-placeholder">${i18n.t('tags.noTagsYetDot')}</div></li>`;
 				return;
 			}
 			tags.forEach(tag => {
@@ -8549,7 +8579,7 @@
 			});
 		} catch (error) {
 			console.error('Error loading tags:', error);
-			tagsContainer.innerHTML = '<p>Error loading tags.</p>';
+			tagsContainer.innerHTML = `<p>${i18n.t('alert.tagsLoadFailed')}</p>`;
 		}
 	}
 

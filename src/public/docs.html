@@ -4,6 +4,7 @@
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<title>Docs</title>
+	<script src="/i18n.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 	<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.bubble.css" rel="stylesheet">
 	<link id="light-theme-link" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs.min.css">
@@ -250,10 +251,11 @@
 <div class="app-container">
 	<aside id="sidebar-left">
 		<div class="sidebar-header">
-			<h2>Docs</h2>
+			<h2 data-i18n="docs.title">Docs</h2>
 			<div class="sidebar-actions">
-				<button id="new-note-btn" title="Create Doc"><i class="fas fa-file-alt"></i></button>
-				<button id="new-folder-btn" title="Create Folder"><i class="fas fa-folder-plus"></i></button>
+				<button id="new-note-btn" data-i18n-title="docs.createDoc" title="Create Doc"><i class="fas fa-file-alt"></i></button>
+				<button id="new-folder-btn" data-i18n-title="docs.createFolder" title="Create Folder"><i class="fas fa-folder-plus"></i></button>
+				<button id="lang-toggle-btn" title="Switch Language" style="font-size: 14px; cursor: pointer; color: var(--text-muted-color); background: none; border: none; padding: 5px; border-radius: 4px;">中/EN</button>
 			</div>
 		</div>
 		<div id="file-tree-container"><ul id="file-tree"></ul></div>
@@ -262,21 +264,21 @@
 	<main id="editor-container">
 		<div id="editor"><!-- Quill editor mounts here --></div>
 		<div id="editor-actions">
-			<button id="theme-toggle-btn" class="action-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
-			<button id="save-btn" disabled><i class="fas fa-save"></i> Save</button>
-			<a href="/" class="action-btn" title="Back to Home" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i></a>
+			<button id="theme-toggle-btn" class="action-btn" data-i18n-title="docs.toggleTheme" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+			<button id="save-btn" disabled><i class="fas fa-save"></i> <span data-i18n="common.save">Save</span></button>
+			<a href="/" class="action-btn" data-i18n-title="docs.backToHome" title="Back to Home" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i></a>
 		</div>
 	</main>
 	<div class="resizer" id="resizer-right"></div>
 	<aside id="sidebar-right">
-		<div class="sidebar-header"><h2>Outline</h2></div>
+		<div class="sidebar-header"><h2 data-i18n="docs.outline">Outline</h2></div>
 		<div id="outline-container"></div>
 	</aside>
 </div>
 <div id="context-menu">
-	<button id="ctx-rename-btn"><i class="fas fa-edit"></i> Rename</button>
-	<button id="ctx-move-btn" disabled><i class="fas fa-arrows-alt"></i> Move (Drag & Drop)</button>
-	<button id="ctx-delete-btn"><i class="fas fa-trash-alt"></i> Delete</button>
+	<button id="ctx-rename-btn"><i class="fas fa-edit"></i> <span data-i18n="docs.rename">Rename</span></button>
+	<button id="ctx-move-btn" disabled><i class="fas fa-arrows-alt"></i> <span data-i18n="docs.move">Move (Drag & Drop)</span></button>
+	<button id="ctx-delete-btn"><i class="fas fa-trash-alt"></i> <span data-i18n="docs.delete">Delete</span></button>
 </div>
 <div id="editor-loader" class="hidden"><div class="spinner"></div></div>
 
@@ -319,7 +321,7 @@
 		if (!response.ok) {
 			// Try to parse a JSON error message from the backend, otherwise use status text
 			const errorData = await response.json().catch(() => ({ message: response.statusText }));
-			throw new Error(errorData.message || 'An unknown API error occurred');
+			throw new Error(errorData.message || i18n.t('docs.unknownApiError'));
 		}
 		// For DELETE requests or other successful requests with no content
 		if (response.status === 204) {
@@ -364,6 +366,10 @@
 
 	// --- MAIN APPLICATION LOGIC ---
 	async function main() {
+		// Apply i18n translations
+		i18n.apply();
+		document.title = i18n.t('docs.title');
+
 		let activeNoteId = null;
 		let selectedNodeId = null;
 		let flatNodes = [];
@@ -476,7 +482,7 @@
 				headings.push({ level, text, id });
 			});
 			if (headings.length === 0) {
-				outlineContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted-color); font-size: 14px; padding: 20px;">No headings found.</p>';
+				outlineContainer.innerHTML = `<p style="text-align: center; color: var(--text-muted-color); font-size: 14px; padding: 20px;">${i18n.t('docs.noHeadings')}</p>`;
 				return;
 			}
 			const outlineHtml = `<ul>${headings.map(h => `<li class="outline-item outline-item-h${h.level}"><a href="#${h.id}">${h.text}</a></li>`).join('')}</ul>`;
@@ -800,11 +806,11 @@
 				}
 			});
 
-			editor.on('text-change', (delta, oldDelta, source) => {
-				if (source === 'user' && activeNoteId && saveBtn.disabled) {
-					saveBtn.disabled = false;
-					saveBtn.innerHTML = "<i class='fas fa-save'></i> Save";
-				}
+		editor.on('text-change', (delta, oldDelta, source) => {
+			if (source === 'user' && activeNoteId && saveBtn.disabled) {
+				saveBtn.disabled = false;
+				saveBtn.innerHTML = `<i class='fas fa-save'></i> ${i18n.t('common.save')}`;
+			}
 				setTimeout(updateOutline, 300);
 				if (source === 'user') {
 					const documentLength = editor.getLength();
@@ -838,7 +844,7 @@
 					if (!range) return;
 
 					// 1. Insert a placeholder
-					const placeholderText = '[Uploading image...]';
+					const placeholderText = i18n.t('docs.uploadingImage');
 					editor.insertText(range.index, placeholderText, 'user');
 					const placeholderLength = placeholderText.length;
 
@@ -855,7 +861,7 @@
 						// 4. Handle upload failure
 						console.error('Image upload failed:', error);
 						editor.deleteText(range.index, placeholderLength, 'user');
-						editor.insertText(range.index, '[Image upload failed]', { 'color': 'red' }, 'user');
+						editor.insertText(range.index, i18n.t('docs.imageUploadFailed'), { 'color': 'red' }, 'user');
 					}
 				}
 			});
@@ -870,7 +876,7 @@
 			await refreshFileTree();
 			const firstFile = flatNodes.find(node => node.type === 'file');
 			if (firstFile) await loadNote(firstFile.id);
-			else { quill.root.innerHTML = '<h1>NO docs</h1><p>Create a new note to get started.</p>'; setEditorEditable(false); }
+			else { quill.root.innerHTML = `<h1>${i18n.t('docs.title')}</h1><p>${i18n.t('docs.noDocs')}</p>`; setEditorEditable(false); }
 		}
 		async function loadNote(noteId) {
 			if (!noteId || noteId === activeNoteId) return;
@@ -878,15 +884,15 @@
 			try {
 				document.querySelector('.tree-item.active')?.classList.remove('active');
 				document.querySelector(`.tree-item[data-id="${noteId}"]`)?.classList.add('active');
-				activeNoteId = noteId;
-				const note = await api.getNode(noteId);
-				quill.root.innerHTML = note.content || '';
-				updateOutline();
-				saveBtn.disabled = true;
-				saveBtn.innerHTML = '<i class=\'fas fa-check\'></i> Saved';
-			} catch (error) {
-				quill.root.innerHTML = `<h1>加载失败</h1><p>${error.message}</p>`;
-				activeNoteId = null;
+			activeNoteId = noteId;
+			const note = await api.getNode(noteId);
+			quill.root.innerHTML = note.content || '';
+			updateOutline();
+			saveBtn.disabled = true;
+			saveBtn.innerHTML = `<i class='fas fa-check'></i> ${i18n.t('docs.saved')}`;
+		} catch (error) {
+			quill.root.innerHTML = `<h1>${i18n.t('docs.loadFailed')}</h1><p>${error.message}</p>`;
+			activeNoteId = null;
 			} finally {
 				hideLoader();
 			}
@@ -895,30 +901,30 @@
 			if (!activeNoteId || saveBtn.disabled) return;
 			const content = quill.root.innerHTML;
 			saveBtn.disabled = true;
-			saveBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin\'></i> Saving...';
+			saveBtn.innerHTML = `<i class='fas fa-spinner fa-spin'></i> ${i18n.t('docs.saving')}`;
 			try {
 				await api.saveNode(activeNoteId, content);
-				saveBtn.innerHTML = '<i class=\'fas fa-check\'></i> Saved';
+				saveBtn.innerHTML = `<i class='fas fa-check'></i> ${i18n.t('docs.saved')}`;
 			} catch (error) {
-				saveBtn.innerHTML = '<i class=\'fas fa-times\'></i> Error';
-				setTimeout(() => { saveBtn.disabled = false; saveBtn.innerHTML = '<i class=\'fas fa-save\'></i> Save'; }, 2000);
+				saveBtn.innerHTML = `<i class='fas fa-times'></i> ${i18n.t('docs.error')}`;
+				setTimeout(() => { saveBtn.disabled = false; saveBtn.innerHTML = `<i class='fas fa-save'></i> ${i18n.t('common.save')}`; }, 2000);
 			}
 		}
 		async function handleDelete(nodeId) {
 			const nodeToDelete = flatNodes.find(n => n.id === nodeId);
-			if (!nodeToDelete || !confirm(`delete "${nodeToDelete.title}"?`)) return;
+			if (!nodeToDelete || !confirm(i18n.t('docs.deleteConfirm', { title: nodeToDelete.title }))) return;
 			await api.deleteNode(nodeId);
 			await refreshFileTree();
 			if (nodeId === activeNoteId) {
 				activeNoteId = null; selectedNodeId = null;
 				const firstFile = flatNodes.find(n => n.type === 'file');
-				if (firstFile) await loadNote(firstFile.id); else { quill.root.innerHTML = '<h1>所有文档已删除</h1>'; setEditorEditable(false); }
+				if (firstFile) await loadNote(firstFile.id); else { quill.root.innerHTML = `<h1>${i18n.t('docs.allDeleted')}</h1>`; setEditorEditable(false); }
 			}
 		}
 		async function handleRename(nodeId) {
 			const nodeToRename = flatNodes.find(n => n.id === nodeId);
 			if (!nodeToRename) return;
-			const newTitle = prompt('New name:', nodeToRename.title);
+			const newTitle = prompt(i18n.t('docs.newName'), nodeToRename.title);
 			if (newTitle && newTitle.trim() && newTitle.trim() !== nodeToRename.title) {
 				await api.renameNode(nodeId, newTitle.trim());
 				await refreshFileTree();
@@ -960,9 +966,17 @@
 			saveBtn.addEventListener('click', saveActiveNote);
 			renameBtn.addEventListener('click', () => handleRename(selectedNodeId));
 			deleteBtn.addEventListener('click', () => handleDelete(selectedNodeId));
+			const langToggleBtn = document.getElementById('lang-toggle-btn');
+			if (langToggleBtn) {
+				langToggleBtn.addEventListener('click', () => {
+					i18n.toggleLang();
+					document.title = i18n.t('docs.title');
+					if (activeNoteId) loadNote(activeNoteId); else initializeDocs();
+				});
+			}
 			document.addEventListener('click', () => contextMenu.style.display = 'none');
-			newNoteBtn.addEventListener('click', async () => { const name = prompt('New doc name:'); if (name) { await api.createNode({type: 'file', title: name, parent_id: getParentIdForNewNode()}); await refreshFileTree(); } });
-			newFolderBtn.addEventListener('click', async () => { const name = prompt('New folder name:'); if (name) { await api.createNode({type: 'folder', title: name, parent_id: getParentIdForNewNode()}); await refreshFileTree(); } });
+			newNoteBtn.addEventListener('click', async () => { const name = prompt(i18n.t('docs.newDocName')); if (name) { await api.createNode({type: 'file', title: name, parent_id: getParentIdForNewNode()}); await refreshFileTree(); } });
+			newFolderBtn.addEventListener('click', async () => { const name = prompt(i18n.t('docs.newFolderName')); if (name) { await api.createNode({type: 'folder', title: name, parent_id: getParentIdForNewNode()}); await refreshFileTree(); } });
 			fileTreeEl.addEventListener('click', e => {
 				const target = e.target.closest('.tree-item'); if (!target) return;
 				const id = target.dataset.id;
