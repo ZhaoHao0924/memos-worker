@@ -777,6 +777,8 @@ async function handleNoteDetail(request, noteId, env) {
 						return jsonResponse({ error: 'Invalid password' }, 403);
 					}
 					await rememberUnlockedNote(request, env, id);
+					// 密码验证通过，覆盖内存中的锁定状态，使返回的响应不触发前端锁定渲染
+					existingNote.is_locked = 0;
 				}
 				return jsonResponse(normalizeNote(existingNote));
 			}
