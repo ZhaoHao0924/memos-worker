@@ -1,6 +1,8 @@
 const NOTES_PER_PAGE = 10;
 const SESSION_DURATION_SECONDS = 30*86400; // Session 有效期: 30 天
 const SESSION_COOKIE = '__session';
+const NOTE_UNLOCK_TTL_SECONDS = 10 * 60;
+let noteLockColumnEnsured = false;
 export default {
 	async fetch(request, env, ctx) {
 		return await handleApiRequest(request, env);
@@ -140,7 +142,7 @@ async function handleApiRequest(request, env) {
 	const imageMatch = pathname.match(/^\/api\/images\/([a-zA-Z0-9-]+)$/);
 	if (imageMatch) {
 		const imageId = imageMatch[1];
-		return handleServeStandaloneImage(imageId, env);
+		return handleServeStandaloneImage(imageId, request, env);
 	}
 	if (request.method === 'GET' && pathname === '/api/attachments') {
 		return handleGetAllAttachments(request, env);
@@ -211,6 +213,7 @@ async function handleStatsRequest(request, env) {
  * 处理时间线数据请求，返回按 年 -> 月 -> 日 结构化的笔记数量统计
  */
 async function handleTimelineRequest(request, env) {
+	await ensureNoteLockColumn(env);
 	const db = env.DB;
 	try {
 		const { searchParams } = new URL(request.url);
@@ -218,7 +221,7 @@ async function handleTimelineRequest(request, env) {
 		// D1 不直接支持 strftime 或 to_char, 我们需要获取所有创建时间，然后在 JS 中处理
 		// 注意：如果笔记数量巨大 (几十万条)，这个查询可能会有性能问题。
 		// 对于几千到几万条笔记，这是完全可以接受的。
-		const stmt = db.prepare("SELECT updated_at FROM notes ORDER BY updated_at DESC");
+		const stmt = db.prepare("SELECT updated_at FROM notes WHERE is_locked = 0 ORDER BY updated_at DESC");
 		const { results } = await stmt.all();
 		if (!results) {
 			return jsonResponse({});
@@ -264,7 +267,143 @@ async function handleTimelineRequest(request, env) {
 /**
  * 处理全文搜索请求，支持分页和叠加筛选条件
  */
+async function ensureNoteLockColumn(env) {
+	if (noteLockColumnEnsured) return;
+	try {
+		await env.DB.prepare("ALTER TABLE notes ADD COLUMN is_locked INTEGER DEFAULT 0 NOT NULL").run();
+		noteLockColumnEnsured = true;
+	} catch (e) {
+		if (String(e.message || '').toLowerCase().includes('duplicate column')) {
+			noteLockColumnEnsured = true;
+			return;
+		}
+		console.error('Ensure lock column failed:', e.message);
+		throw e;
+	}
+}
+
+
+function isNoteLocked(note) {
+	return note && Number(note.is_locked || 0) === 1;
+}
+
+function parseJsonArray(value) {
+	if (Array.isArray(value)) return value;
+	if (typeof value !== 'string') return [];
+	try {
+		const parsed = JSON.parse(value);
+		return Array.isArray(parsed) ? parsed : [];
+	} catch (e) {
+		return [];
+	}
+}
+
+function normalizeNote(note) {
+	if (!note) return note;
+	note.files = parseJsonArray(note.files);
+	return note;
+}
+
+function sanitizeLockedNote(note) {
+	if (!note) return note;
+	normalizeNote(note);
+	note.is_locked = Number(note.is_locked || 0);
+	if (isNoteLocked(note)) {
+		note.content = '';
+		note.files = [];
+		note.pics = '[]';
+		note.videos = '[]';
+		note.locked = true;
+	}
+	return note;
+}
+
+function sanitizeLockedNotes(notes) {
+	return notes.map(note => sanitizeLockedNote(note));
+}
+
+function verifyPassword(password, env) {
+	return typeof password === 'string' && password.length > 0 && password === env.PASSWORD;
+}
+
+async function getSessionIdFromRequest(request) {
+	const cookieHeader = request.headers.get('Cookie');
+	if (!cookieHeader || !cookieHeader.includes(SESSION_COOKIE)) return null;
+	const cookies = cookieHeader.split(';').map(c => c.trim());
+	const sessionCookie = cookies.find(c => c.startsWith(`${SESSION_COOKIE}=`));
+	return sessionCookie?.split('=')[1] || null;
+}
+
+async function isNoteUnlocked(request, env, noteId) {
+	const sessionId = await getSessionIdFromRequest(request);
+	if (!sessionId) return false;
+	return (await env.NOTES_KV.get(`note_unlock:${sessionId}:${noteId}`)) === '1';
+}
+
+async function rememberUnlockedNote(request, env, noteId) {
+	const sessionId = await getSessionIdFromRequest(request);
+	if (!sessionId) return;
+	await env.NOTES_KV.put(`note_unlock:${sessionId}:${noteId}`, '1', { expirationTtl: NOTE_UNLOCK_TTL_SECONDS });
+}
+
+function extractStandaloneImageIdsFromNote(note) {
+	const ids = new Set();
+	const addFromUrl = (url) => {
+		const match = String(url || '').match(/\/api\/images\/([a-zA-Z0-9-]+)/);
+		if (match) ids.add(match[1]);
+	};
+	parseJsonArray(note?.pics).forEach(addFromUrl);
+	String(note?.content || '').replace(/\/api\/images\/([a-zA-Z0-9-]+)/g, (url) => {
+		addFromUrl(url);
+		return url;
+	});
+	return ids;
+}
+
+async function revokeNotePublicLinks(env, note) {
+	if (!note?.id) return;
+	const noteId = Number(note.id);
+	const deleteTasks = [];
+	const publicId = await env.NOTES_KV.get(`note_share:${noteId}`);
+	if (publicId) {
+		deleteTasks.push(env.NOTES_KV.delete(`public_memo:${publicId}`));
+		deleteTasks.push(env.NOTES_KV.delete(`note_share:${noteId}`));
+	}
+	const files = parseJsonArray(note.files);
+	let filesChanged = false;
+	for (const file of files) {
+		if (file?.public_id) {
+			deleteTasks.push(env.NOTES_KV.delete(`public_file:${file.public_id}`));
+			delete file.public_id;
+			filesChanged = true;
+		}
+	}
+	await Promise.all(deleteTasks);
+	if (filesChanged) {
+		await env.DB.prepare("UPDATE notes SET files = ? WHERE id = ?").bind(JSON.stringify(files), noteId).run();
+		note.files = files;
+	}
+
+	if (typeof env.NOTES_KV.list !== 'function') return;
+	const imageIds = extractStandaloneImageIdsFromNote(note);
+	let cursor;
+	do {
+		const listed = await env.NOTES_KV.list({ prefix: 'public_file:', cursor });
+		const staleKeys = [];
+		await Promise.all((listed.keys || []).map(async ({ name }) => {
+			const data = await env.NOTES_KV.get(name, 'json');
+			if (Number(data?.noteId) === noteId || (data?.standaloneImageId && imageIds.has(data.standaloneImageId))) {
+				staleKeys.push(name);
+			}
+		}));
+		await Promise.all(staleKeys.map(key => env.NOTES_KV.delete(key)));
+		cursor = listed.list_complete ? undefined : listed.cursor;
+	} while (cursor);
+}
+
+
 async function handleSearchRequest(request, env) {
+	await ensureNoteLockColumn(env);
 	const { searchParams } = new URL(request.url);
 	const query = searchParams.get('q');
 
@@ -292,7 +431,7 @@ async function handleSearchRequest(request, env) {
 		// Escape double quotes and wrap in double quotes to handle hyphens and other special characters
 		// This treats the query as a literal phrase prefix.
 		const escapedQuery = query.replace(/"/g, '""');
-		let whereClauses = ["notes_fts MATCH ?"];
+		let whereClauses = ["notes_fts MATCH ?", "n.is_locked = 0"];
 		let bindings = [`"${escapedQuery}"*`];
 		let joinClause = "";
 		if (isFavoritesMode) {
@@ -331,12 +470,7 @@ async function handleSearchRequest(request, env) {
 		const hasMore = notesPlusOne.length > limit;
 		const notes = notesPlusOne.slice(0, limit);
 
-		notes.forEach(note => {
-			if (typeof note.files === 'string') {
-				try { note.files = JSON.parse(note.files); } catch (e) { note.files = []; }
-			}
-		});
-		return jsonResponse({ notes, hasMore });
+		return jsonResponse({ notes: sanitizeLockedNotes(notes), hasMore });
 	} catch (e) {
 		console.error("Search Error:", e.message);
 		return jsonResponse({ error: 'Database Error', message: e.message }, 500);
@@ -347,6 +481,7 @@ async function handleSearchRequest(request, env) {
  * 获取所有标签及其使用次数
  */
 async function handleTagsList(request, env) {
+	await ensureNoteLockColumn(env);
 	const db = env.DB;
 	try {
 		// 使用 LEFT JOIN 和 COUNT 来统计每个标签关联的笔记数量
@@ -355,6 +490,8 @@ async function handleTagsList(request, env) {
             SELECT t.name, COUNT(nt.note_id) as count
             FROM tags t
             LEFT JOIN note_tags nt ON t.id = nt.tag_id
+            LEFT JOIN notes n ON nt.note_id = n.id AND n.is_locked = 0
+            WHERE n.id IS NOT NULL
             GROUP BY t.id, t.name
             HAVING count > 0 -- 只返回被使用过的标签
             ORDER BY count DESC, t.name ASC
@@ -481,6 +618,7 @@ async function handleSetSettings(request, env) {
  * 处理笔记列表的 GET 和 POST
  */
 async function handleNotesList(request, env) {
+	await ensureNoteLockColumn(env);
 	const db = env.DB;
 
 	try {
@@ -548,18 +686,13 @@ async function handleNotesList(request, env) {
 				const hasMore = notesPlusOne.length > limit;
 				const notes = notesPlusOne.slice(0, limit);
 
-				notes.forEach(note => {
-					if (typeof note.files === 'string') {
-						try { note.files = JSON.parse(note.files); } catch (e) { note.files = []; }
-					}
-				});
-
-				return jsonResponse({ notes, hasMore });
+					return jsonResponse({ notes: sanitizeLockedNotes(notes), hasMore });
 			}
 
 			case 'POST': {
 				const formData = await request.formData();
 				const content = formData.get('content')?.toString() || '';
+				const isLocked = formData.get('isLocked') === 'true' ? 1 : 0;
 				const files = formData.getAll('file');
 
 				if (!content.trim() && files.every(f => !f.name)) {
@@ -574,11 +707,11 @@ async function handleNotesList(request, env) {
 
 				// 【核心修改】在 INSERT 语句中加入新的 pics 字段
 				const insertStmt = db.prepare(
-					"INSERT INTO notes (content, files, is_pinned, created_at, updated_at, pics) VALUES (?, ?, 0, ?, ?, ?) RETURNING id"
+					"INSERT INTO notes (content, files, is_pinned, created_at, updated_at, pics, is_locked) VALUES (?, ?, 0, ?, ?, ?, ?) RETURNING id"
 				);
 				// 先用一个空的 files 数组插入
 				// 【核心修改】将提取出的 picUrls 绑定到 SQL 语句中
-				const { id: noteId } = await insertStmt.bind(content, "[]", now, now, picUrls).first();
+				const { id: noteId } = await insertStmt.bind(content, "[]", now, now, picUrls, isLocked).first();
 				if (!noteId) {
 					throw new Error("Failed to create note and get ID.");
 				}
@@ -602,11 +735,7 @@ async function handleNotesList(request, env) {
 				await processNoteTags(db, noteId, content);
 				// 获取完整的笔记返回给前端
 				const newNote = await db.prepare("SELECT * FROM notes WHERE id = ?").bind(noteId).first();
-				if (typeof newNote.files === 'string') {
-					newNote.files = JSON.parse(newNote.files);
-				}
-
-				return jsonResponse(newNote, 201);
+				return jsonResponse(sanitizeLockedNote(newNote), 201);
 			}
 		}
 	} catch (e) {
@@ -619,6 +748,7 @@ async function handleNotesList(request, env) {
  * 处理单条笔记的 PUT 和 DELETE
  */
 async function handleNoteDetail(request, noteId, env) {
+	await ensureNoteLockColumn(env);
 	const db = env.DB;
 	const id = parseInt(noteId);
 	if (isNaN(id)) {
@@ -641,12 +771,46 @@ async function handleNoteDetail(request, noteId, env) {
 		}
 
 		switch (request.method) {
+			case 'GET': {
+				const password = new URL(request.url).searchParams.get('password') || '';
+				if (isNoteLocked(existingNote)) {
+					if (!verifyPassword(password, env) && !(await isNoteUnlocked(request, env, id))) {
+						return jsonResponse({ error: 'Invalid password' }, 403);
+					}
+					await rememberUnlockedNote(request, env, id);
+				}
+				return jsonResponse(normalizeNote(existingNote));
+			}
+
 			case 'PUT': {
 				const formData = await request.formData();
 				const shouldUpdateTimestamp = formData.get('update_timestamp') !== 'false';
+				const password = formData.get('password')?.toString() || '';
+				const hasValidPassword = verifyPassword(password, env) || await isNoteUnlocked(request, env, id);
 
-				if (formData.has('content')) {
-					const content = formData.get('content')?.toString() ?? existingNote.content;
+				if (formData.has('isLocked')) {
+					const nextLocked = formData.get('isLocked') === 'true' ? 1 : 0;
+					if ((isNoteLocked(existingNote) || nextLocked === 0) && !hasValidPassword) {
+						return jsonResponse({ error: 'Invalid password' }, 403);
+					}
+					await db.prepare("UPDATE notes SET is_locked = ? WHERE id = ?").bind(nextLocked, id).run();
+					if (nextLocked) {
+						await revokeNotePublicLinks(env, existingNote);
+					} else {
+						await rememberUnlockedNote(request, env, id);
+					}
+					// 重新读取笔记，使后续的锁定状态检查基于最新的数据
+					existingNote = await db.prepare("SELECT * FROM notes WHERE id = ?").bind(id).first();
+					if (typeof existingNote?.files === "string") {
+						try { existingNote.files = JSON.parse(existingNote.files); } catch(e) { existingNote.files = []; }
+					}
+				}
+
+				if (formData.has('content') || formData.has('filesToDelete') || formData.getAll('file').some(f => f.name && f.size > 0)) {
+					if (isNoteLocked(existingNote) && !hasValidPassword) {
+						return jsonResponse({ error: 'Invalid password' }, 403);
+					}
+					const content = formData.has('content') ? (formData.get('content')?.toString() ?? existingNote.content) : existingNote.content;
 					let currentFiles = existingNote.files;
 
 					// --- 现在的文件处理只关心非图片附件 ---
@@ -694,6 +858,11 @@ async function handleNoteDetail(request, noteId, env) {
 					await processNoteTags(db, id, content);
 				}
 
+				const updatesLockedMetadata = formData.has('isPinned') || formData.has('isFavorited') || formData.has('is_archived');
+				if (isNoteLocked(existingNote) && updatesLockedMetadata && !hasValidPassword) {
+					return jsonResponse({ error: 'Invalid password' }, 403);
+				}
+
 				if (formData.has('isPinned')) { // --- 这是置顶状态的更新 ---
 					const isPinned = formData.get('isPinned') === 'true' ? 1 : 0;
 					const stmt = db.prepare("UPDATE notes SET is_pinned = ? WHERE id = ?");
@@ -711,13 +880,16 @@ async function handleNoteDetail(request, noteId, env) {
 				}
 
 				const updatedNote = await db.prepare("SELECT * FROM notes WHERE id = ?").bind(id).first();
-				if (typeof updatedNote.files === 'string') {
-					updatedNote.files = JSON.parse(updatedNote.files);
-				}
-				return jsonResponse(updatedNote);
+				const canReturnFullNote = !isNoteLocked(updatedNote) || hasValidPassword || formData.has('content');
+				return jsonResponse(canReturnFullNote ? normalizeNote(updatedNote) : sanitizeLockedNote(updatedNote));
 			}
 
 			case 'DELETE': {
+				const password = new URL(request.url).searchParams.get('password') || '';
+				if (isNoteLocked(existingNote) && !verifyPassword(password, env) && !(await isNoteUnlocked(request, env, id))) {
+					return jsonResponse({ error: 'Invalid password' }, 403);
+				}
+
 				let allR2KeysToDelete = [];
 
 				if (existingNote.files && existingNote.files.length > 0) {
@@ -769,8 +941,12 @@ async function handleFileRequest(noteId, fileId, request, env) {
 		return new Response('Invalid Note ID', { status: 400 });
 	}
 
+	await ensureNoteLockColumn(env);
 	// 尝试从数据库获取元数据
-	const note = await db.prepare("SELECT files FROM notes WHERE id = ?").bind(id).first();
+	const note = await db.prepare("SELECT files, is_locked FROM notes WHERE id = ?").bind(id).first();
+	if (isNoteLocked(note) && !(await isNoteUnlocked(request, env, id))) {
+		return new Response('Forbidden', { status: 403 });
+	}
 
 	// 【核心修改】即使 note 不存在或 files 为空，我们也不立即返回 404，
 	// 因为图片可能只记录在 pics 字段中。
@@ -1330,6 +1506,7 @@ async function handleImgurProxyUpload(request, env) {
 }
 
 async function handleGetAllAttachments(request, env) {
+	await ensureNoteLockColumn(env);
 	const db = env.DB;
 	const url = new URL(request.url);
 	const page = parseInt(url.searchParams.get('page') || '1');
@@ -1344,7 +1521,7 @@ async function handleGetAllAttachments(request, env) {
                     n.id AS noteId, n.updated_at AS timestamp, 'image' AS type,
                     json_each.value AS url, NULL AS name, NULL AS size, NULL AS id
                 FROM notes n, json_each(n.pics) AS json_each
-                WHERE json_valid(n.pics) AND json_array_length(n.pics) > 0
+                WHERE n.is_locked = 0 AND json_valid(n.pics) AND json_array_length(n.pics) > 0
 
                 UNION ALL
 
@@ -1352,7 +1529,7 @@ async function handleGetAllAttachments(request, env) {
                     n.id AS noteId, n.updated_at AS timestamp, 'video' AS type,
                     json_each.value AS url, NULL AS name, NULL AS size, NULL AS id
                 FROM notes n, json_each(n.videos) AS json_each
-                WHERE json_valid(n.videos) AND json_array_length(n.videos) > 0
+                WHERE n.is_locked = 0 AND json_valid(n.videos) AND json_array_length(n.videos) > 0
 
                 UNION ALL
 
@@ -1362,7 +1539,7 @@ async function handleGetAllAttachments(request, env) {
                     json_extract(json_each.value, '$.size') AS size,
                     json_extract(json_each.value, '$.id') AS id
                 FROM notes n, json_each(n.files) AS json_each
-                WHERE json_valid(n.files) AND json_array_length(n.files) > 0
+                WHERE n.is_locked = 0 AND json_valid(n.files) AND json_array_length(n.files) > 0
             )
             SELECT * FROM combined_attachments
             ORDER BY timestamp DESC
@@ -1393,8 +1570,9 @@ async function handleGetAllAttachments(request, env) {
  * @param {object} env The Worker environment/bindings.
  * @returns {Promise<Response>}
  */
-async function handleServeStandaloneImage(imageId, env) {
+async function handleServeStandaloneImage(imageId, request, env) {
 	const r2Key = `uploads/${imageId}`;
+
 	const object = await env.NOTES_R2_BUCKET.get(r2Key);
 
 	if (object === null) {
@@ -1645,9 +1823,13 @@ async function handleShareFileRequest(noteId, fileId, request, env) {
 	}
 
 	try {
-		const note = await db.prepare("SELECT files FROM notes WHERE id = ?").bind(id).first();
+		await ensureNoteLockColumn(env);
+		const note = await db.prepare("SELECT files, is_locked FROM notes WHERE id = ?").bind(id).first();
 		if (!note) {
 			return jsonResponse({ error: 'Note not found' }, 404);
+		}
+		if (isNoteLocked(note)) {
+			return jsonResponse({ error: 'This note is locked.' }, 403);
 		}
 
 		let files = [];
@@ -1707,11 +1889,23 @@ async function handlePublicFileRequest(publicId, request, env) {
 
 	if (kvData.standaloneImageId) {
 		// 1. 是独立上传的图片
+		if (kvData.noteId) {
+			await ensureNoteLockColumn(env);
+			const note = await env.DB.prepare("SELECT is_locked FROM notes WHERE id = ?").bind(kvData.noteId).first();
+			if (isNoteLocked(note)) {
+				return new Response('File is locked.', { status: 403 });
+			}
+		}
 		object = await env.NOTES_R2_BUCKET.get(`uploads/${kvData.standaloneImageId}`);
 		fileName = kvData.fileName || `image_${kvData.standaloneImageId}.png`;
 		contentType = kvData.contentType || 'image/png';
 	} else if (kvData.noteId && kvData.fileId) {
 		// 2. 是笔记的附件
+		await ensureNoteLockColumn(env);
+		const note = await env.DB.prepare("SELECT is_locked FROM notes WHERE id = ?").bind(kvData.noteId).first();
+		if (isNoteLocked(note)) {
+			return new Response('File is locked.', { status: 403 });
+		}
 		object = await env.NOTES_R2_BUCKET.get(`${kvData.noteId}/${kvData.fileId}`);
 		fileName = kvData.fileName;
 		contentType = kvData.contentType;
@@ -1750,6 +1944,15 @@ async function handlePublicFileRequest(publicId, request, env) {
  */
 async function handleShareNoteRequest(noteId, request, env) {
 	try {
+		await ensureNoteLockColumn(env);
+		const note = await env.DB.prepare("SELECT is_locked FROM notes WHERE id = ?").bind(parseInt(noteId, 10)).first();
+		if (!note) {
+			return jsonResponse({ error: 'Note not found' }, 404);
+		}
+		if (isNoteLocked(note)) {
+			return jsonResponse({ error: 'This note is locked.' }, 403);
+		}
+
 		const body = await request.json().catch(() => ({}));
 
 		if (body.publicId && body.expirationTtl !== undefined) {
@@ -1845,9 +2048,13 @@ async function handlePublicNoteRequest(publicId, env) {
 	const noteId = kvData.noteId;
 
 	try {
-		const note = await env.DB.prepare("SELECT id, content, updated_at, files FROM notes WHERE id = ?").bind(noteId).first();
+		await ensureNoteLockColumn(env);
+		const note = await env.DB.prepare("SELECT id, content, updated_at, files, is_locked FROM notes WHERE id = ?").bind(noteId).first();
 		if (!note) {
 			return jsonResponse({ error: 'Shared note content not found' }, 404);
+		}
+		if (isNoteLocked(note)) {
+			return jsonResponse({ error: 'This note is locked' }, 403);
 		}
 
 		// --- 辅助函数：将任何私有 URL 转换为公开 URL ---
@@ -1859,7 +2066,7 @@ async function handlePublicNoteRequest(publicId, env) {
 			if (fileMatch) {
 				kvPayload = { noteId: parseInt(fileMatch[1]), fileId: fileMatch[2], fileName: 'media' };
 			} else if (imageMatch) {
-				kvPayload = { standaloneImageId: imageMatch[1], fileName: 'image.png' };
+				kvPayload = { noteId: note.id, standaloneImageId: imageMatch[1], fileName: 'image.png' };
 			}
 
 			if (kvPayload) {
@@ -1932,9 +2139,13 @@ async function handlePublicRawNoteRequest(publicId, env) {
 
 	try {
 		// 2. 使用获取到的 noteId 从 D1 查询笔记内容
-		const note = await env.DB.prepare("SELECT content FROM notes WHERE id = ?").bind(kvData.noteId).first();
+		await ensureNoteLockColumn(env);
+		const note = await env.DB.prepare("SELECT content, is_locked FROM notes WHERE id = ?").bind(kvData.noteId).first();
 		if (!note) {
 			return new Response('Not Found', { status: 404 });
+		}
+		if (isNoteLocked(note)) {
+			return new Response('This note is locked', { status: 403 });
 		}
 		const headers = new Headers({ 'Content-Type': 'text/plain; charset=utf-8' });
 		return new Response(note.content, { headers });
@@ -1950,11 +2161,13 @@ async function handlePublicRawNoteRequest(publicId, env) {
  * Body: { sourceNoteId: number, targetNoteId: number, addSeparator: boolean }
  */
 async function handleMergeNotes(request, env) {
+	await ensureNoteLockColumn(env);
 	const db = env.DB;
 	try {
-		const { sourceNoteId, targetNoteId, addSeparator } = await request.json();
+		const { sourceNoteId, targetNoteId, addSeparator, password = '' } = await request.json();
 
 		if (!sourceNoteId || !targetNoteId || sourceNoteId === targetNoteId) {
+
 			return jsonResponse({ error: 'Invalid source or target note ID.' }, 400);
 		}
 
@@ -1967,7 +2180,17 @@ async function handleMergeNotes(request, env) {
 			return jsonResponse({ error: 'One or both notes not found.' }, 404);
 		}
 
+		const lockedNotes = [sourceNote, targetNote].filter(isNoteLocked);
+		if (lockedNotes.length > 0) {
+			const hasValidPassword = verifyPassword(password, env);
+			const hasUnlockedAll = await Promise.all(lockedNotes.map(note => isNoteUnlocked(request, env, note.id)));
+			if (!hasValidPassword && hasUnlockedAll.some(unlocked => !unlocked)) {
+				return jsonResponse({ error: 'Invalid password' }, 403);
+			}
+		}
+
 		// 目标笔记在前，源笔记在后
+
 		const separator = addSeparator ? '\n\n---\n\n' : '\n\n';
 		const mergedContent = targetNote.content + separator + sourceNote.content;
 		const targetFiles = JSON.parse(targetNote.files || '[]');
@@ -2006,11 +2229,7 @@ async function handleMergeNotes(request, env) {
 
 		// 返回更新后的目标笔记
 		const updatedMergedNote = await db.prepare("SELECT * FROM notes WHERE id = ?").bind(targetNote.id).first();
-		if (typeof updatedMergedNote.files === 'string') {
-			updatedMergedNote.files = JSON.parse(updatedMergedNote.files);
-		}
-
-		return jsonResponse(updatedMergedNote);
+		return jsonResponse(normalizeNote(updatedMergedNote));
 
 	} catch (e) {
 		console.error("Merge Notes Error:", e.message, e.cause);

@@ -107,6 +107,13 @@ const i18n = (function () {
 			'note.placeholder': 'Memos here...',
 			'note.deleteNote': 'Delete Note',
 			'note.pinned': 'Pinned',
+			'note.lock': 'Lock',
+			'note.unlock': 'Unlock',
+			'note.locked': 'Locked note',
+			'note.lockedDescription': 'The content and attachments are hidden.',
+			'note.unlockToView': 'Enter password to view',
+			'note.lockOnCreate': 'Lock',
+			'note.lockOnCreateTitle': 'Lock this note after publishing',
 
 			// --- Attachments Viewer ---
 			'attachments.title': 'Files',
@@ -128,6 +135,7 @@ const i18n = (function () {
 			'modal.ok': 'OK',
 			'modal.cancel': 'Cancel',
 			'modal.delete': 'Delete',
+			'modal.enterPassword': 'Enter your login password',
 			'merge.separator': 'Add separator line (---) between notes',
 			'merge.button': 'Merge',
 			'merge.confirmTitle': 'Merge Notes',
@@ -236,6 +244,8 @@ const i18n = (function () {
 			'alert.heatmapLoadFailed': 'Could not load activity data.',
 			'alert.timelineLoadFailed': 'Error loading timeline.',
 			'alert.tagsLoadFailed': 'Error loading tags.',
+			'alert.invalidPassword': 'Invalid password.',
+			'alert.lockedNoteHidden': 'This note is locked.',
 
 			// --- Empty states ---
 			'empty.nothing': 'Nothing here yet.',
@@ -379,6 +389,13 @@ const i18n = (function () {
 			'note.placeholder': '在这里写笔记...',
 			'note.deleteNote': '删除笔记',
 			'note.pinned': '已置顶',
+			'note.lock': '加锁',
+			'note.unlock': '解锁',
+			'note.locked': '已加锁笔记',
+			'note.lockedDescription': '内容和附件已隐藏。',
+			'note.unlockToView': '输入密码查看',
+			'note.lockOnCreate': '加锁',
+			'note.lockOnCreateTitle': '发布后加锁隐藏这条笔记',
 
 			// --- Attachments Viewer ---
 			'attachments.title': '文件',
@@ -400,6 +417,7 @@ const i18n = (function () {
 			'modal.ok': '确定',
 			'modal.cancel': '取消',
 			'modal.delete': '删除',
+			'modal.enterPassword': '请输入当前登录密码',
 			'merge.separator': '在笔记之间添加分隔线 (---)',
 			'merge.button': '合并',
 			'merge.confirmTitle': '合并笔记',
@@ -508,6 +526,8 @@ const i18n = (function () {
 			'alert.heatmapLoadFailed': '无法加载活动数据。',
 			'alert.timelineLoadFailed': '时间线加载失败。',
 			'alert.tagsLoadFailed': '标签加载失败。',
+			'alert.invalidPassword': '密码错误。',
+			'alert.lockedNoteHidden': '这条笔记已加锁。',
 
 			// --- Empty states ---
 			'empty.nothing': '这里还什么都没有。',

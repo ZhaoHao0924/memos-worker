@@ -188,6 +188,9 @@
 	}
 
 	async function loadNote() {
+		mainContent.querySelectorAll('.note').forEach(note => note.remove());
+		loader.style.display = 'block';
+		loader.innerHTML = '<div class="spinner"></div>';
 		try {
 			const urlParams = new URLSearchParams(window.location.search);
 			const publicId = urlParams.get('id');

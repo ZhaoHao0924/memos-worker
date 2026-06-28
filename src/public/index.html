@@ -862,6 +862,50 @@
 	display: none;
   }
 
+  .note.locked .attachments-grid,
+  .note.locked .toggle-content-btn {
+	display: none;
+  }
+
+  .locked-note-placeholder {
+	padding: 1rem;
+	border: 1px dashed var(--border-color);
+	border-radius: 10px;
+	background: rgba(128, 128, 128, 0.08);
+	color: var(--text-secondary);
+	text-align: center;
+  }
+
+  .locked-note-placeholder strong {
+	display: block;
+	margin-bottom: 0.4rem;
+	color: var(--text-color);
+  }
+
+  .locked-note-placeholder .btn {
+	margin-top: 0.8rem;
+  }
+
+  .lock-toggle-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	color: var(--text-secondary);
+	font-size: 0.9rem;
+	cursor: pointer;
+  }
+
+  .password-modal-input {
+	width: 100%;
+	box-sizing: border-box;
+	margin: 1rem 0;
+	padding: 0.75rem;
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	background: var(--bg-color);
+	color: var(--text-color);
+  }
+
   .note.editing .edit-area {
 	display: block;
   }
@@ -3258,6 +3302,10 @@
 										d='M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7' />
 								</svg>
 							</button>
+							<label class='lock-toggle-label' data-i18n-title='note.lockOnCreateTitle' title='Lock this note after publishing'>
+								<input type='checkbox' id='note-lock-toggle'>
+								<span data-i18n='note.lockOnCreate'>Lock</span>
+							</label>
 							<button type='button' id='main-split-toggle-btn' class='icon-btn' data-i18n-title='editor.toggleSplit' title='Toggle Split View'>
 								<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px'
 										 fill='currentColor'>
@@ -3371,6 +3419,9 @@
 	<button class='icon-btn' data-action='share' data-i18n-title='note.share' title='Share'>
 		<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/></svg>
 	</button>
+	<button class='icon-btn' data-action='lock' data-i18n-title='note.lock' title='Lock'>
+		<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none'/><path d='M17 8h-1V6c0-2.76-2.24-5-5-5S6 3.24 6 6v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H7.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/></svg>
+	</button>
 	<button class='icon-btn btn-danger' data-action='delete' data-i18n-title='note.deleteNote' title='Delete Note'>
 		<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'>
 			<path d='M0 0h24v24H0V0z' fill='none' />
@@ -3395,6 +3446,15 @@
 		</div>
 	</div>
 
+
+	<div id='password-prompt-box' class='custom-modal-box'>
+		<p id='password-prompt-message'></p>
+		<input type='password' id='password-prompt-input' class='password-modal-input' autocomplete='current-password'>
+		<div class='custom-modal-actions'>
+			<button id='password-prompt-cancel-btn' class='btn btn-secondary' data-i18n='modal.cancel'>Cancel</button>
+			<button id='password-prompt-ok-btn' class='btn btn-primary' data-i18n='modal.ok'>OK</button>
+		</div>
+	</div>
 
 	<div id='merge-confirm-box' class='custom-modal-box'>
 		<p id='merge-confirm-message'></p>
@@ -4195,8 +4255,10 @@
 			currentPage: 1,
 			isLoading: false,
 			hasMore: true
-		}
+		},
+		unlockedNotePasswords: new Map()
 	};
+
 
 	// --- DOM Elements ---
 	const authContainer = document.getElementById('auth-container');
@@ -4206,6 +4268,7 @@
 	const noteForm = document.getElementById('note-form');
 	const noteInput = document.getElementById('note-input');
 	const noteFile = document.getElementById('note-file');
+	const noteLockToggle = document.getElementById('note-lock-toggle');
 	const fileListDisplay = document.getElementById('file-list-display');
 	const notesContainer = document.getElementById('notes-container');
 	const refreshLoader = document.getElementById('refresh-loader');
@@ -4222,6 +4285,11 @@
 	const customConfirmMessage = document.getElementById('custom-confirm-message');
 	const customConfirmOkBtn = document.getElementById('custom-confirm-ok-btn');
 	const customConfirmCancelBtn = document.getElementById('custom-confirm-cancel-btn');
+	const passwordPromptBox = document.getElementById('password-prompt-box');
+	const passwordPromptMessage = document.getElementById('password-prompt-message');
+	const passwordPromptInput = document.getElementById('password-prompt-input');
+	const passwordPromptOkBtn = document.getElementById('password-prompt-ok-btn');
+	const passwordPromptCancelBtn = document.getElementById('password-prompt-cancel-btn');
 	const selectFilesBtn = document.getElementById('select-files-btn');
 	const mainPreviewToggleBtn = document.getElementById('main-preview-toggle-btn');
 	const mainSplitToggleBtn = document.getElementById('main-split-toggle-btn');
@@ -4454,6 +4522,27 @@
 
 	copyDisplayLinkBtn.addEventListener('click', () => copyLink(document.getElementById('share-display-link-input'), copyDisplayLinkBtn));
 	copyRawLinkBtn.addEventListener('click', () => copyLink(document.getElementById('share-raw-link-input'), copyRawLinkBtn));
+	async function unlockAndLoadNote(noteId, message = i18n.t('modal.enterPassword')) {
+		const password = await showPasswordPrompt(message);
+		if (password === null) return null;
+		const response = await fetch(`/api/notes/${noteId}?password=${encodeURIComponent(password)}`);
+		if (!response.ok) {
+			throw new Error(i18n.t('alert.invalidPassword'));
+		}
+		appState.unlockedNotePasswords.set(String(noteId), password);
+		const note = await response.json();
+
+		const noteIndex = allNotesCache.findIndex(n => n.id === parseInt(noteId, 10));
+		if (noteIndex !== -1) allNotesCache[noteIndex] = note;
+		const noteElement = notesContainer.querySelector(`.note[data-id="${noteId}"]`);
+		if (noteElement) {
+			const newNoteElement = createNoteElement(note);
+			noteElement.replaceWith(newNoteElement);
+			if (appState.isWaterfall) waterfallObserver.observe(newNoteElement);
+		}
+		return note;
+	}
+
 	// --- 显示笔记操作菜单 ---
 	function showNotePopover(targetButton, noteId) {
 		clearTimeout(popoverHoverTimer);
@@ -4468,8 +4557,15 @@
 		const pinBtn = notePopoverMenu.querySelector('[data-action="pin"]');
 		const archiveBtn = notePopoverMenu.querySelector('[data-action="archive"], [data-action="unarchive"]');
 		const shareBtn = notePopoverMenu.querySelector('[data-action="share"]');
+		const lockBtn = notePopoverMenu.querySelector('[data-action="lock"], [data-action="unlock"]');
 
 		shareBtn.style.display = settings.enableSharing ? '' : 'none';
+		if (noteData && lockBtn) {
+			const locked = Number(noteData.is_locked || 0) === 1 || noteData.locked === true;
+			lockBtn.dataset.action = locked ? 'unlock' : 'lock';
+			lockBtn.title = locked ? i18n.t('note.unlock') : i18n.t('note.lock');
+			lockBtn.setAttribute('data-i18n-title', locked ? 'note.unlock' : 'note.lock');
+		}
 		if (appState.baseMode === 'archive') {
 			// 在归档视图下，只可能显示 "Unarchive"
 			archiveBtn.style.display = settings.showArchive ? '' : 'none'; // 同样要尊重设置
@@ -4539,7 +4635,34 @@
 		activePopoverNoteId = null;
 		const noteElement = notesContainer.querySelector(`.note[data-id="${noteId}"]`);
 
-		switch (action) {
+			switch (action) {
+			case 'lock':
+			case 'unlock': {
+				actionButton.disabled = true;
+				try {
+					const formData = new FormData();
+					formData.append('isLocked', (action === 'lock').toString());
+					if (action === 'unlock') {
+						const password = await showPasswordPrompt(i18n.t('modal.enterPassword'));
+						if (password === null) break;
+						formData.append('password', password);
+						appState.unlockedNotePasswords.set(String(noteId), password);
+					}
+					const res = await fetch(`/api/notes/${noteId}`, { method: 'PUT', body: formData });
+
+					if (!res.ok) throw new Error(action === 'unlock' ? i18n.t('alert.invalidPassword') : i18n.t('alert.failed'));
+					const updatedNote = await res.json();
+					const newNoteElement = createNoteElement(updatedNote);
+					if (noteElement) noteElement.replaceWith(newNoteElement);
+					const noteIndex = allNotesCache.findIndex(n => n.id === parseInt(noteId, 10));
+					if (noteIndex !== -1) allNotesCache[noteIndex] = updatedNote;
+				} catch (error) {
+					showCustomAlert(error.message, 'error');
+				} finally {
+					actionButton.disabled = false;
+				}
+				break;
+			}
 			case 'favorite': {
 				const isCurrentlyFavorited = actionButton.classList.contains('favorited');
 				const newFavoriteState = !isCurrentlyFavorited;
@@ -4998,11 +5121,10 @@
 			const formData = new FormData();
 			formData.append('filesToDelete', JSON.stringify([fileId]));
 
-			// 找到对应的笔记内容来填充，以防内容为空
 			const originalNote = allNotesCache.find(n => n.id == noteId);
-			const content = originalNote ? originalNote.content : ''; // 如果在主列表缓存中能找到就用，否则为空
-			formData.append('content', content);
 			formData.append('update_timestamp', 'false');
+			const unlockedPassword = appState.unlockedNotePasswords.get(String(noteId));
+			if (unlockedPassword) formData.append('password', unlockedPassword);
 
 			try {
 				const response = await fetch(`/api/notes/${noteId}`, {
@@ -5012,13 +5134,12 @@
 
 				const result = await response.json();
 				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.error || 'Failed to delete file.');
+					throw new Error(result.error || 'Failed to delete file.');
 				}
 
 				if (result.noteDeleted) {
 					// 从 Files 视图中移除所有属于该笔记的附件项
-					attachmentsContent.querySelectorAll(`.attachment-item a[data-note-id="${noteId}"]`).forEach(el => el.closest('.attachment-item').remove());
+					attachmentsContent.querySelectorAll(`.attachment-item[data-note-id="${noteId}"], .attachment-item a[data-note-id="${noteId}"]`).forEach(el => el.closest('.attachment-item')?.remove());
 					attachmentsState.allData = attachmentsState.allData.filter(item => item.noteId != noteId);
 					allNotesCache = allNotesCache.filter(n => n.id !== parseInt(noteId));
 					showToast(i18n.t('toast.fileRemoved'), 'info');
@@ -6395,6 +6516,7 @@
 				const formData = new FormData();
 				// 1. 添加從全屏編輯器獲取的新文本內容
 				formData.append('content', content);
+				formData.append('isLocked', noteLockToggle.checked.toString());
 				// 2. 從主界面的 noteFile 輸入框中獲取文件並添加到 formData
 				Array.from(noteFile.files).forEach(file => {
 					formData.append('file', file);
@@ -6739,15 +6861,19 @@
 		if (!result.confirmed) return;
 
 		try {
+			const sourcePassword = appState.unlockedNotePasswords.get(String(sourceId));
+			const targetPassword = appState.unlockedNotePasswords.get(String(targetId));
 			const response = await fetch('/api/notes/merge', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					sourceNoteId: parseInt(sourceId),
 					targetNoteId: parseInt(targetId),
-					addSeparator: result.addSeparator
+					addSeparator: result.addSeparator,
+					password: sourcePassword || targetPassword || ''
 				})
 			});
+
 
 			if (!response.ok) {
 				const err = await response.json();
@@ -6928,6 +7054,32 @@
 		});
 	}
 
+	function showPasswordPrompt(message) {
+		return new Promise(resolve => {
+			passwordPromptMessage.textContent = message;
+			passwordPromptInput.value = '';
+			customAlertBox.classList.remove('active');
+			customConfirmBox.classList.remove('active');
+			passwordPromptBox.classList.add('active');
+			customModalOverlay.classList.add('visible');
+			passwordPromptInput.focus();
+
+			const cleanup = (value) => {
+				passwordPromptInput.removeEventListener('keydown', onKeydown);
+				hideCustomModal();
+				resolve(value);
+			};
+			const onKeydown = (event) => {
+				if (event.key === 'Enter') cleanup(passwordPromptInput.value);
+				if (event.key === 'Escape') cleanup(null);
+			};
+
+			passwordPromptOkBtn.addEventListener('click', () => cleanup(passwordPromptInput.value), { once: true });
+			passwordPromptCancelBtn.addEventListener('click', () => cleanup(null), { once: true });
+			passwordPromptInput.addEventListener('keydown', onKeydown);
+		});
+	}
+
 	function showMergeConfirm(message) {
 		return new Promise(resolve => {
 			const mergeBox = document.getElementById('merge-confirm-box');
@@ -6965,6 +7117,7 @@
 		customModalOverlay.classList.remove('visible');
 		customAlertBox.classList.remove('active');
 		customConfirmBox.classList.remove('active');
+		passwordPromptBox.classList.remove('active');
 		document.getElementById('merge-confirm-box').classList.remove('active');
 		setTimeout(() => {
 			customAlertMessage.textContent = '';
@@ -6977,6 +7130,8 @@
 		if (e.target === customModalOverlay) {
 			if (customConfirmBox.classList.contains('active')) {
 				customConfirmCancelBtn.click(); // Programmatically click cancel
+			} else if (passwordPromptBox.classList.contains('active')) {
+				passwordPromptCancelBtn.click();
 			} else {
 				hideCustomModal();
 			}
@@ -7353,13 +7508,17 @@
 	}
 
 	function createNoteElement(note) {
+		const isLocked = Number(note.is_locked || 0) === 1 || note.locked === true;
 		let isLongContent = false;
-		if (settings.enableContentTruncation) {
-			isLongContent = note.content.length > NOTE_TRUNCATE_LENGTH;
+		if (!isLocked && settings.enableContentTruncation) {
+			isLongContent = (note.content || '').length > NOTE_TRUNCATE_LENGTH;
 		}
 
 		const noteElement = document.createElement('div');
 		noteElement.className = 'note';
+		if (isLocked) {
+			noteElement.classList.add('locked');
+		}
 
 		if (isLongContent) {
 			noteElement.classList.add('is-long');
@@ -7383,7 +7542,7 @@
 				</button>
 		` : '';
 		let attachmentsHTML = '';
-		if (note.files && note.files.length > 0) {
+		if (!isLocked && note.files && note.files.length > 0) {
 			attachmentsHTML += '<div class="attachments-grid">';
 			note.files.forEach(file => {
 				const fileUrl = `/api/files/${noteId}/${file.id}`;
@@ -7476,12 +7635,23 @@
 
 									<div class='edit-files-container'></div>
 							`;
-		noteElement.querySelector('.note-content').innerHTML = postProcessMarkdownHtml(marked.parse(note.content));
+		const contentElement = noteElement.querySelector('.note-content.view-mode');
+		if (isLocked) {
+			contentElement.innerHTML = `
+				<div class='locked-note-placeholder'>
+					<strong>${i18n.t('note.locked')}</strong>
+					<div>${i18n.t('note.lockedDescription')}</div>
+					<button type='button' class='unlock-view-btn btn'>${i18n.t('note.unlockToView')}</button>
+				</div>
+			`;
+		} else {
+			contentElement.innerHTML = postProcessMarkdownHtml(marked.parse(note.content || ''));
+		}
 
 		if (isLongContent) {
-			noteElement.querySelector('.note-content.view-mode').classList.add('truncated');
+			contentElement.classList.add('truncated');
 		}
-		noteElement.querySelector('.edit-textarea').value = note.content;
+		noteElement.querySelector('.edit-textarea').value = isLocked ? '' : (note.content || '');
 
 		return noteElement;
 	}
@@ -7861,6 +8031,7 @@
 
 		const formData = new FormData();
 		formData.append('content', noteInput.value);
+		formData.append('isLocked', noteLockToggle.checked.toString());
 		Array.from(noteFile.files).forEach(file => {
 			if (!file.type.startsWith('image/')) {
 				formData.append('file', file);
@@ -7971,6 +8142,23 @@
 			}
 			return;
 		}
+		const unlockViewBtn = target.closest('.unlock-view-btn');
+		if (unlockViewBtn) {
+			e.preventDefault();
+			const noteElement = unlockViewBtn.closest('.note');
+			const noteId = noteElement?.dataset.id;
+			if (!noteId) return;
+			unlockViewBtn.disabled = true;
+			try {
+				await unlockAndLoadNote(noteId, i18n.t('modal.enterPassword'));
+			} catch (error) {
+				showCustomAlert(error.message, 'error');
+			} finally {
+				unlockViewBtn.disabled = false;
+			}
+			return;
+		}
+
 		const shareBtn = target.closest('.share-file-btn');
 		if (shareBtn) {
 			e.preventDefault();
@@ -8133,6 +8321,16 @@
 		}
 
 		if (fullscreenEditBtn) {
+			const noteData = allNotesCache.find(n => n.id === parseInt(noteId, 10));
+			if (noteData && (Number(noteData.is_locked || 0) === 1 || noteData.locked === true)) {
+				try {
+					const unlockedNote = await unlockAndLoadNote(noteId, i18n.t('modal.enterPassword'));
+					if (unlockedNote) openFullscreenEditor(unlockedNote.content, noteId);
+				} catch (error) {
+					showCustomAlert(error.message, 'error');
+				}
+				return;
+			}
 			// 从当前笔记的 DOM 元素中找到正在编辑的 textarea
 			const editTextarea = noteElement.querySelector('.edit-textarea');
 			// 获取 textarea 中最新的、可能尚未保存的内容
@@ -8140,13 +8338,23 @@
 			// 使用这个最新的内容打开全屏编辑器
 			openFullscreenEditor(currentContent, noteId);
 		} else if (editBtn) {
+			let noteData = allNotesCache.find(n => n.id === parseInt(noteId, 10));
+			if (noteData && (Number(noteData.is_locked || 0) === 1 || noteData.locked === true)) {
+				try {
+					noteData = await unlockAndLoadNote(noteId, i18n.t('modal.enterPassword'));
+					if (!noteData) return;
+					const refreshedNoteElement = notesContainer.querySelector(`.note[data-id="${noteId}"]`);
+					if (refreshedNoteElement) refreshedNoteElement.querySelector('.edit').click();
+				} catch (error) {
+					showCustomAlert(error.message, 'error');
+				}
+				return;
+			}
 			noteElement.classList.add('editing');
 			// 初始化为编辑模式 (raw)
 			noteElement.dataset.editMode = 'raw';
 			noteElement.querySelector('.md-preview-toggle-btn').classList.remove('active');
 			noteElement.querySelector('.md-split-toggle-btn').classList.remove('active');
-
-			const noteData = allNotesCache.find(n => n.id === parseInt(noteId, 10));
 			noteElement.newFiles = new DataTransfer().files;
 
 			const filesContainer = noteElement.querySelector('.edit-files-container');
@@ -8229,10 +8437,13 @@
 
 			const filesToDelete = Array.from(noteElement.querySelectorAll('.edit-file-tag[data-deleted="true"]')).map(t => t.dataset.fileId);
 			formData.append('filesToDelete', JSON.stringify(filesToDelete));
+			const unlockedPassword = appState.unlockedNotePasswords.get(String(noteId));
+			if (unlockedPassword) formData.append('password', unlockedPassword);
 
 			Array.from(noteElement.newFiles).forEach(file => formData.append('file', file));
 
 			try {
+
 				const res = await fetch(`/api/notes/${noteId}`, { method: 'PUT', body: formData });
 				if (!res.ok) throw new Error(`Update failed`);
 				const updatedNote = await res.json();
