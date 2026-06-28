@@ -278,7 +278,6 @@ async function ensureNoteLockColumn(env) {
 			return;
 		}
 		console.error('Ensure lock column failed:', e.message);
-		throw e;
 	}
 }
 
