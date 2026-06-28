@@ -798,7 +798,7 @@ async function handleNoteDetail(request, noteId, env) {
 					} else {
 						await rememberUnlockedNote(request, env, id);
 					}
-					// 重新从数据库读取完整笔记，确保后续 isNoteLocked 判断基于最新状态
+					// 重新读取笔记，使后续的锁定状态检查基于最新的数据
 					existingNote = await db.prepare("SELECT * FROM notes WHERE id = ?").bind(id).first();
 					if (typeof existingNote?.files === "string") {
 						try { existingNote.files = JSON.parse(existingNote.files); } catch(e) { existingNote.files = []; }
