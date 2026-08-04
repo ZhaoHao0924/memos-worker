@@ -32,6 +32,11 @@ const i18n = (function () {
 			'common.language': 'Language',
 			'common.copyCode': 'Copy code',
 			'common.copyFailed': 'Copy failed!',
+			'time.justNow': 'Just now',
+			'time.minuteAgo': '{count} minute ago',
+			'time.minutesAgo': '{count} minutes ago',
+			'time.hourAgo': '{count} hour ago',
+			'time.hoursAgo': '{count} hours ago',
 
 			// --- Login ---
 			'login.username': 'Username',
@@ -339,6 +344,11 @@ const i18n = (function () {
 			'common.language': '语言',
 			'common.copyCode': '复制代码',
 			'common.copyFailed': '复制失败！',
+			'time.justNow': '刚刚',
+			'time.minuteAgo': '{count} 分钟前',
+			'time.minutesAgo': '{count} 分钟前',
+			'time.hourAgo': '{count} 小时前',
+			'time.hoursAgo': '{count} 小时前',
 
 			// --- Login ---
 			'login.username': '用户名',
