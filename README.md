@@ -104,6 +104,15 @@ If you configured the Telegram variables, you need to activate the webhook once.
 > 1.  Clone the repository locally and fill in the `wrangler.toml` file with your configurations for KV, D1, and R2.
 > 2.  Run the command: `npx wrangler deploy`
 
+### GitHub Actions Deployment
+
+Pushes to `master` run `.github/workflows/deploy.yml`. Add these repository secrets in GitHub under **Settings -> Secrets and variables -> Actions**:
+
+- `CLOUDFLARE_API_TOKEN`: a token with permission to edit Workers.
+- `CLOUDFLARE_ACCOUNT_ID`: your Cloudflare account ID.
+
+Worker runtime secrets such as `USERNAME`, `PASSWORD`, and Telegram credentials remain configured in Cloudflare; they are not stored in GitHub.
+
 ## 💡 Tips
 
 -   **Preview Raw Files**: In the main interface or on a public share page, you can **right-click** on any text-based file attachment (like `.txt`, `.md`, `.json`, `.js`) to open its raw content directly in a new tab.
