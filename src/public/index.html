@@ -2644,6 +2644,13 @@
 	max-width: 1200px;
 	width: 90%;
   }
+  #app-layout-container.bookmarks-mode #left-sidebar {
+	display: none !important;
+  }
+  #app-layout-container.bookmarks-mode #main-content-area .container {
+	max-width: 1200px;
+	width: 90%;
+  }
   #attachments-viewer {
 	padding: 1rem 0;
   }
@@ -2689,6 +2696,200 @@
 	display: flex;
 	justify-content: center;
 	padding: 4rem 0;
+  }
+  #bookmarks-viewer {
+	padding: 1rem 0;
+  }
+  .bookmarks-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--border-color);
+  }
+  .bookmarks-header h3 {
+	margin: 0;
+	font-size: 1.5rem;
+  }
+  .bookmarks-header .btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+  }
+  .bookmarks-header .btn svg {
+	width: 18px;
+	height: 18px;
+	fill: currentColor;
+  }
+  .bookmarks-toolbar {
+	display: flex;
+	justify-content: flex-end;
+	margin: 1rem 0;
+  }
+  .bookmark-search-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: min(100%, 360px);
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--border-color);
+	border-radius: 6px;
+	background-color: var(--surface-color);
+	color: var(--text-secondary);
+	box-sizing: border-box;
+  }
+  .bookmark-search-label svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+	fill: currentColor;
+  }
+  #bookmark-search-input {
+	width: 100%;
+	padding: 0;
+	border: none;
+	outline: none;
+	background: transparent;
+	color: var(--text-color);
+	font: inherit;
+  }
+  #bookmarks-content {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 1rem;
+  }
+  #bookmarks-content.loading-state {
+	display: flex;
+	justify-content: center;
+	padding: 4rem 0;
+  }
+  .bookmark-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 170px;
+	padding: 1rem;
+	background-color: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .bookmark-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+  .bookmark-card-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.75rem;
+  }
+  .bookmark-card-title {
+	min-width: 0;
+	color: var(--text-color);
+	font-size: 1.05rem;
+	font-weight: 600;
+	line-height: 1.35;
+	text-decoration: none;
+	word-break: break-word;
+  }
+  .bookmark-card-title:hover {
+	color: var(--primary-color);
+	text-decoration: underline;
+  }
+  .bookmark-card-url {
+	margin-top: 0.35rem;
+	color: var(--primary-color);
+	font-size: 0.8rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+  }
+  .bookmark-card-description {
+	margin: 0.85rem 0;
+	color: var(--text-secondary);
+	font-size: 0.9rem;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	word-break: break-word;
+  }
+  .bookmark-card-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-top: auto;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--border-color);
+  }
+  .bookmark-card-time {
+	color: var(--text-secondary);
+	font-size: 0.75rem;
+	white-space: nowrap;
+  }
+  .bookmark-card-actions {
+	display: flex;
+	gap: 0.25rem;
+  }
+  .bookmark-card-actions .icon-btn {
+	width: 30px;
+	height: 30px;
+  }
+  .bookmark-empty {
+	grid-column: 1 / -1;
+	padding: 4rem 1rem;
+	color: var(--text-secondary);
+	text-align: center;
+  }
+  #bookmark-modal-box {
+	max-width: 560px;
+	padding: 0;
+	text-align: left;
+  }
+  #bookmark-modal-box .settings-header {
+	cursor: default;
+  }
+  #bookmark-form-content {
+	padding: 1.25rem 1.5rem 0;
+  }
+  .bookmark-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	margin-bottom: 1rem;
+	font-weight: 500;
+  }
+  .bookmark-form-field input,
+  .bookmark-form-field textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.65rem 0.75rem;
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	font: inherit;
+  }
+  .bookmark-form-field textarea {
+	min-height: 110px;
+	resize: vertical;
+  }
+  #bookmark-modal-box .custom-modal-actions {
+	padding: 0 1.5rem 1.5rem;
+  }
+  @media (max-width: 600px) {
+	.bookmarks-header {
+		align-items: stretch;
+		flex-direction: column;
+	}
+	.bookmarks-header .btn {
+		justify-content: center;
+	}
+	#bookmarks-content {
+		grid-template-columns: 1fr;
+	}
   }
   .attachment-month-group {
 	margin-bottom: 2.5rem;
@@ -3201,6 +3402,12 @@
 									d='M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z'></path>
 							</svg>
 						</button>
+						<button type='button' id='quick-add-bookmark-btn' class='icon-btn' data-i18n-title='bookmarks.add' title='Save bookmark'>
+							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
+								<path d='M6 2h12c1.1 0 2 .9 2 2v18l-8-3.5L4 22V4c0-1.1.9-2 2-2zm0 2v14.9l6-2.6 6 2.6V4H6z'></path>
+								<path d='M11 7h2v6h-2zM8 9h8v2H8z'></path>
+							</svg>
+						</button>
 						<button id='waterfall-toggle-btn' class='icon-btn' data-i18n-title='header.waterfall' title='Toggle waterfall mode'>
 							<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none' /><path d='M10 18h5V5h-5v13zm-6 0h5V5H4v13zM16 5v13h5V5h-5z' /></svg>
 						</button>
@@ -3344,6 +3551,29 @@
 				</div>
 			</div>
 
+			<div id='bookmarks-viewer' style='display: none;'>
+				<header class='bookmarks-header'>
+					<h3 data-i18n='bookmarks.title'>Bookmarks</h3>
+					<button type='button' id='add-bookmark-btn' class='btn btn-primary'>
+						<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
+							<path d='M11 5h2v14h-2zM5 11h14v2H5z'></path>
+						</svg>
+						<span data-i18n='bookmarks.add'>Save bookmark</span>
+					</button>
+				</header>
+				<div class='bookmarks-toolbar'>
+					<label class='bookmark-search-label'>
+						<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
+							<path d='M9.5 3a6.5 6.5 0 0 1 5.2 10.4l5.45 5.45-1.4 1.4-5.45-5.45A6.5 6.5 0 1 1 9.5 3zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'></path>
+						</svg>
+						<input type='search' id='bookmark-search-input' data-i18n-placeholder='bookmarks.search' placeholder='Search bookmarks...'>
+					</label>
+				</div>
+				<div id='bookmarks-content' class='loading-state'>
+					<div class='spinner'></div>
+				</div>
+			</div>
+
 		</div>
 	</main>
 
@@ -3371,6 +3601,12 @@
 			<button id="attachments-tab-btn" class="sidebar-tab-btn" data-tab-name="attachments" data-i18n-title="sidebar.files" title="Attachments">
 				<svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
 				<span data-i18n="sidebar.files">Files</span>
+			</button>
+			<button id='bookmarks-tab-btn' class='sidebar-tab-btn' data-tab-name='bookmarks' data-i18n-title='bookmarks.title' title='Bookmarks'>
+				<svg xmlns='http://www.w3.org/2000/svg' height='28px' viewBox='0 0 24 24' width='28px' fill='currentColor'>
+					<path d='M6 2h12c1.1 0 2 .9 2 2v18l-8-3.5L4 22V4c0-1.1.9-2 2-2zm0 2v14.9l6-2.6 6 2.6V4H6z'></path>
+				</svg>
+				<span data-i18n='bookmarks.title'>Bookmarks</span>
 			</button>
 			<a href="/docs" target="_blank" class="sidebar-tab-btn" data-i18n-title="sidebar.openDocs" title="Open Docs">
 				<svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
@@ -3636,6 +3872,10 @@
 					<label for='toggle-feature-docs' data-i18n='settings.showDocs'>Show Docs Link</label>
 					<input type='checkbox' id='toggle-feature-docs' class='toggle-switch'>
 				</div>
+				<div class='setting-item'>
+					<label for='toggle-feature-bookmarks' data-i18n='settings.showBookmarks'>Show Bookmarks</label>
+					<input type='checkbox' id='toggle-feature-bookmarks' class='toggle-switch'>
+				</div>
 			</div>
 
 			<div class='setting-group'>
@@ -3734,6 +3974,33 @@
 			</div>
 		</div>
 	</div>
+</div>
+<!-- Bookmark Modal -->
+<div id='bookmark-modal-overlay' class='custom-modal-overlay'>
+	<form id='bookmark-modal-box' class='custom-modal-box'>
+		<header class='settings-header'>
+			<h3 id='bookmark-modal-title' data-i18n='bookmarks.addTitle'>Save Bookmark</h3>
+			<button type='button' id='close-bookmark-modal-btn' class='icon-btn' data-i18n-title='common.close' title='Close'>&times;</button>
+		</header>
+		<div id='bookmark-form-content'>
+			<label class='bookmark-form-field' for='bookmark-url-input'>
+				<span data-i18n='bookmarks.url'>URL</span>
+				<input type='url' id='bookmark-url-input' data-i18n-placeholder='bookmarks.urlPlaceholder' placeholder='https://example.com' required maxlength='2048' autocomplete='url'>
+			</label>
+			<label class='bookmark-form-field' for='bookmark-title-input'>
+				<span data-i18n='bookmarks.titleLabel'>Title</span>
+				<input type='text' id='bookmark-title-input' data-i18n-placeholder='bookmarks.titlePlaceholder' placeholder='Optional title' maxlength='200'>
+			</label>
+			<label class='bookmark-form-field' for='bookmark-description-input'>
+				<span data-i18n='bookmarks.description'>Notes</span>
+				<textarea id='bookmark-description-input' data-i18n-placeholder='bookmarks.descriptionPlaceholder' placeholder='Optional notes' maxlength='2000'></textarea>
+			</label>
+		</div>
+		<div class='custom-modal-actions'>
+			<button type='button' id='close-bookmark-modal-action' class='btn btn-secondary' data-i18n='common.cancel'>Cancel</button>
+			<button type='submit' id='bookmark-submit-btn' class='btn btn-primary' data-i18n='common.save'>Save</button>
+		</div>
+	</form>
 </div>
 <!--<div id='waterfall-popover-menu' class='popover-menu'>
 	<button class='icon-btn' data-action='view' title='View Note'>
@@ -4212,6 +4479,7 @@
 		enablePinning: true,    // 控制置顶功能
 		enableSharing: true,    // 控制分享功能
 		showDocs: true,          // 控制 Docs 链接
+		showBookmarks: true,     // 控制书签
 		enableContentTruncation: true,
 	}
 	let settings = defaultSettings;
@@ -4274,6 +4542,7 @@
 	const refreshLoader = document.getElementById('refresh-loader');
 	const scrollLoader = document.getElementById('scroll-loader');
 	const refreshBtn = document.getElementById('refresh-btn');
+	const quickAddBookmarkBtn = document.getElementById('quick-add-bookmark-btn');
 	const themeToggleBtn = document.getElementById('theme-toggle-btn');
 	const customModalOverlay = document.getElementById('custom-modal-overlay');
 	// Alert elements
@@ -4391,6 +4660,21 @@
 	const attachmentsViewer = document.getElementById('attachments-viewer');
 	const attachmentsContent = document.getElementById('attachments-content');
 	const attachmentsTabs = document.querySelector('.attachments-tabs');
+	const bookmarksTabBtn = document.getElementById('bookmarks-tab-btn');
+	const bookmarksViewer = document.getElementById('bookmarks-viewer');
+	const bookmarksContent = document.getElementById('bookmarks-content');
+	const addBookmarkBtn = document.getElementById('add-bookmark-btn');
+	const bookmarkSearchInput = document.getElementById('bookmark-search-input');
+	const bookmarkModalOverlay = document.getElementById('bookmark-modal-overlay');
+	const bookmarkModalBox = document.getElementById('bookmark-modal-box');
+	const bookmarkModalTitle = document.getElementById('bookmark-modal-title');
+	const closeBookmarkModalBtn = document.getElementById('close-bookmark-modal-btn');
+	const closeBookmarkModalAction = document.getElementById('close-bookmark-modal-action');
+	const bookmarkForm = document.getElementById('bookmark-modal-box');
+	const bookmarkUrlInput = document.getElementById('bookmark-url-input');
+	const bookmarkTitleInput = document.getElementById('bookmark-title-input');
+	const bookmarkDescriptionInput = document.getElementById('bookmark-description-input');
+	const bookmarkSubmitBtn = document.getElementById('bookmark-submit-btn');
 
 	const moreActionsContainer = document.getElementById('more-actions-container');
 	const moreActionsBtn = document.getElementById('more-actions-btn');
@@ -4417,6 +4701,7 @@
 		loadAndRenderTags();
 		loadAndRenderTimeline();
 		if (appState.baseMode === 'attachments' && attachmentsState.isLoaded) fetchAllAttachments(true);
+		if (appState.baseMode === 'bookmarks' && bookmarksState.isLoaded) renderBookmarks();
 	}
 
 	function switchLanguage() {
@@ -4886,6 +5171,233 @@
 		currentPage: 1,
 		hasMore: true,
 	};
+	const bookmarksState = {
+		allData: [],
+		isLoaded: false,
+		isLoading: false,
+		query: '',
+	};
+	let editingBookmarkId = null;
+
+	function getBookmarkHost(url) {
+		try {
+			return new URL(url).hostname;
+		} catch (e) {
+			return url;
+		}
+	}
+
+	function renderBookmarks() {
+		const query = bookmarksState.query.trim().toLowerCase();
+		const visibleBookmarks = bookmarksState.allData.filter(bookmark => {
+			if (!query) return true;
+			return [bookmark.title, bookmark.url, bookmark.description].some(value => String(value || '').toLowerCase().includes(query));
+		});
+
+		bookmarksContent.classList.remove('loading-state');
+		bookmarksContent.innerHTML = '';
+		if (visibleBookmarks.length === 0) {
+			const emptyState = document.createElement('div');
+			emptyState.className = 'bookmark-empty';
+			emptyState.textContent = bookmarksState.query ? i18n.t('bookmarks.noResults') : i18n.t('bookmarks.empty');
+			bookmarksContent.appendChild(emptyState);
+			return;
+		}
+
+		const fragment = document.createDocumentFragment();
+		visibleBookmarks.forEach(bookmark => {
+			const card = document.createElement('article');
+			card.className = 'bookmark-card';
+			card.dataset.bookmarkId = bookmark.id;
+
+			const cardHeader = document.createElement('div');
+			cardHeader.className = 'bookmark-card-header';
+			const titleLink = document.createElement('a');
+			titleLink.className = 'bookmark-card-title';
+			titleLink.href = bookmark.url;
+			titleLink.target = '_blank';
+			titleLink.rel = 'noopener noreferrer';
+			titleLink.title = i18n.t('bookmarks.open');
+			titleLink.textContent = bookmark.title || bookmark.url;
+			cardHeader.appendChild(titleLink);
+
+			const actions = document.createElement('div');
+			actions.className = 'bookmark-card-actions';
+			const editButton = document.createElement('button');
+			editButton.type = 'button';
+			editButton.className = 'icon-btn';
+			editButton.dataset.bookmarkAction = 'edit';
+			editButton.dataset.bookmarkId = bookmark.id;
+			editButton.title = i18n.t('bookmarks.edit');
+			editButton.innerHTML = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'></path></svg>`;
+			actions.appendChild(editButton);
+
+			const deleteButton = document.createElement('button');
+			deleteButton.type = 'button';
+			deleteButton.className = 'icon-btn btn-danger';
+			deleteButton.dataset.bookmarkAction = 'delete';
+			deleteButton.dataset.bookmarkId = bookmark.id;
+			deleteButton.title = i18n.t('bookmarks.delete');
+			deleteButton.innerHTML = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5-1-1h-5l-1 1H5v2h14V4z'></path></svg>`;
+			actions.appendChild(deleteButton);
+			cardHeader.appendChild(actions);
+			card.appendChild(cardHeader);
+
+			const url = document.createElement('div');
+			url.className = 'bookmark-card-url';
+			url.title = bookmark.url;
+			url.textContent = `${getBookmarkHost(bookmark.url)}${new URL(bookmark.url).pathname === '/' ? '' : new URL(bookmark.url).pathname}`;
+			card.appendChild(url);
+
+			if (bookmark.description) {
+				const description = document.createElement('div');
+				description.className = 'bookmark-card-description';
+				description.textContent = bookmark.description;
+				card.appendChild(description);
+			}
+
+			const footer = document.createElement('div');
+			footer.className = 'bookmark-card-footer';
+			const time = formatTimestamp(bookmark.updated_at);
+			const timeElement = document.createElement('time');
+			timeElement.className = 'bookmark-card-time';
+			timeElement.dateTime = new Date(bookmark.updated_at).toISOString();
+			timeElement.title = time.absolute;
+			timeElement.textContent = time.relative || time.absolute;
+			footer.appendChild(timeElement);
+			footer.appendChild(actions.cloneNode(true));
+			card.appendChild(footer);
+
+			// Keep actions in the footer so the card height remains predictable.
+			cardHeader.removeChild(actions);
+			fragment.appendChild(card);
+		});
+		bookmarksContent.appendChild(fragment);
+	}
+
+	async function fetchBookmarks() {
+		if (bookmarksState.isLoading) return;
+		bookmarksState.isLoading = true;
+		bookmarksContent.classList.add('loading-state');
+		bookmarksContent.innerHTML = `<div class='spinner'></div>`;
+
+		try {
+			const response = await fetch('/api/bookmarks');
+			if (response.status === 401) {
+				showLoginScreen();
+				return;
+			}
+			if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+			const data = await response.json();
+			bookmarksState.allData = Array.isArray(data.bookmarks) ? data.bookmarks : [];
+			bookmarksState.isLoaded = true;
+			renderBookmarks();
+		} catch (error) {
+			console.error('Failed to load bookmarks:', error);
+			bookmarksContent.classList.remove('loading-state');
+			bookmarksContent.innerHTML = `<div class='bookmark-empty'>${i18n.t('bookmarks.loadFailed')}</div>`;
+		} finally {
+			bookmarksState.isLoading = false;
+		}
+	}
+
+	function openBookmarkModal(bookmark = null) {
+		editingBookmarkId = bookmark ? Number(bookmark.id) : null;
+		bookmarkModalTitle.textContent = i18n.t(editingBookmarkId ? 'bookmarks.editTitle' : 'bookmarks.addTitle');
+		bookmarkUrlInput.value = bookmark?.url || '';
+		bookmarkTitleInput.value = bookmark?.title || '';
+		bookmarkDescriptionInput.value = bookmark?.description || '';
+		bookmarkSubmitBtn.disabled = false;
+		bookmarkSubmitBtn.textContent = i18n.t('common.save');
+		bookmarkModalOverlay.classList.add('visible');
+		bookmarkModalBox.classList.add('active');
+		setTimeout(() => bookmarkUrlInput.focus(), 0);
+	}
+
+	function closeBookmarkModal() {
+		bookmarkModalOverlay.classList.remove('visible');
+		bookmarkModalBox.classList.remove('active');
+		bookmarkForm.reset();
+		bookmarkModalTitle.textContent = i18n.t('bookmarks.addTitle');
+		editingBookmarkId = null;
+	}
+
+	addBookmarkBtn.addEventListener('click', () => openBookmarkModal());
+	quickAddBookmarkBtn.addEventListener('click', () => openBookmarkModal());
+	closeBookmarkModalBtn.addEventListener('click', closeBookmarkModal);
+	closeBookmarkModalAction.addEventListener('click', closeBookmarkModal);
+	bookmarkModalOverlay.addEventListener('click', event => {
+		if (event.target === bookmarkModalOverlay) closeBookmarkModal();
+	});
+	bookmarkSearchInput.addEventListener('input', debounce(event => {
+		bookmarksState.query = event.target.value;
+		renderBookmarks();
+	}, 150));
+
+	bookmarkForm.addEventListener('submit', async event => {
+		event.preventDefault();
+		const bookmarkId = editingBookmarkId;
+		const isEditing = bookmarkId !== null;
+		bookmarkSubmitBtn.disabled = true;
+		bookmarkSubmitBtn.textContent = i18n.t('common.saving');
+
+		try {
+			const response = await fetch(isEditing ? `/api/bookmarks/${bookmarkId}` : '/api/bookmarks', {
+				method: isEditing ? 'PUT' : 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					url: bookmarkUrlInput.value,
+					title: bookmarkTitleInput.value,
+					description: bookmarkDescriptionInput.value
+				})
+			});
+			const result = await response.json().catch(() => ({}));
+			if (!response.ok) throw new Error(result.error || i18n.t('bookmarks.saveFailed'));
+
+			closeBookmarkModal();
+			showToast(i18n.t(isEditing ? 'bookmarks.updated' : 'bookmarks.saved'));
+			if (appState.baseMode === 'bookmarks') {
+				await fetchBookmarks();
+			} else {
+				await showBookmarksViewer();
+			}
+		} catch (error) {
+			showCustomAlert(error.message, 'error');
+		} finally {
+			bookmarkSubmitBtn.disabled = false;
+			bookmarkSubmitBtn.textContent = i18n.t('common.save');
+		}
+	});
+
+	bookmarksContent.addEventListener('click', async event => {
+		const actionButton = event.target.closest('[data-bookmark-action]');
+		if (!actionButton) return;
+		event.preventDefault();
+		event.stopPropagation();
+		const bookmarkId = Number(actionButton.dataset.bookmarkId);
+		const bookmark = bookmarksState.allData.find(item => Number(item.id) === bookmarkId);
+		if (!bookmark) return;
+
+		if (actionButton.dataset.bookmarkAction === 'edit') {
+			openBookmarkModal(bookmark);
+			return;
+		}
+
+		if (!(await showCustomConfirm(i18n.t('bookmarks.deleteConfirm')))) return;
+		actionButton.disabled = true;
+		try {
+			const response = await fetch(`/api/bookmarks/${bookmarkId}`, { method: 'DELETE' });
+			const result = await response.json().catch(() => ({}));
+			if (!response.ok) throw new Error(result.error || i18n.t('bookmarks.delete'));
+			bookmarksState.allData = bookmarksState.allData.filter(item => Number(item.id) !== bookmarkId);
+			renderBookmarks();
+			showToast(i18n.t('bookmarks.deleted'));
+		} catch (error) {
+			actionButton.disabled = false;
+			showCustomAlert(error.message, 'error');
+		}
+	});
+
 	/**
 	 * @param {boolean} isInitialLoad - 是否是首次加载或切换筛选器
 	 */
@@ -5020,8 +5532,20 @@
 		});
 	}
 
+	async function showBookmarksViewer() {
+		appState.baseMode = 'bookmarks';
+		hideAttachmentsViewer();
+		updateSidebarTabsUI();
+		appContainer.style.display = 'none';
+		bookmarksViewer.style.display = 'block';
+		appLayoutContainer.classList.add('bookmarks-mode');
+		updateEditorVisibility();
+		await fetchBookmarks();
+	}
+
 	async function showAttachmentsViewer() {
 		appState.baseMode = 'attachments';
+		hideAttachmentsViewer();
 		updateSidebarTabsUI();
 		appContainer.style.display = 'none';
 		attachmentsViewer.style.display = 'block';
@@ -5177,8 +5701,9 @@
 	 */
 	function hideAttachmentsViewer() {
 		attachmentsViewer.style.display = 'none';
+		bookmarksViewer.style.display = 'none';
 		appContainer.style.display = 'block';
-		appLayoutContainer.classList.remove('attachments-mode');
+		appLayoutContainer.classList.remove('attachments-mode', 'bookmarks-mode');
 	}
 
 	// --- 右侧栏按钮的点击事件 ---
@@ -5212,6 +5737,11 @@
 	attachmentsTabBtn.addEventListener('click', () => {
 		if (appState.baseMode === 'attachments') return;
 		showAttachmentsViewer();
+	});
+
+	bookmarksTabBtn.addEventListener('click', () => {
+		if (appState.baseMode === 'bookmarks') return;
+		showBookmarksViewer();
 	});
 
 	// --- 为附件页面的子选项卡添加事件委托 ---
@@ -5587,6 +6117,12 @@
 		// 控制右侧边栏的按钮
 		document.getElementById('favorites-tab-btn').style.display = settings.showFavorites ? '' : 'none';
 		document.getElementById('archive-tab-btn').style.display = settings.showArchive ? '' : 'none';
+		const showBookmarks = settings.showBookmarks !== false;
+		bookmarksTabBtn.style.display = showBookmarks ? '' : 'none';
+		quickAddBookmarkBtn.style.display = showBookmarks ? '' : 'none';
+		if (!showBookmarks && appState.baseMode === 'bookmarks') {
+			homeTabBtn.click();
+		}
 
 		const docsLink = document.querySelector('.sidebar-buttons-group a[href="/docs"]');
 		if (docsLink) {
@@ -5680,6 +6216,7 @@
 		scrollToHeatmapEnd();
 
 		document.documentElement.style.setProperty('--waterfall-card-width', `${settings.waterfallCardWidth}px`);
+		applyFeatureVisibilitySettings();
 	}
 
 	/**
@@ -5713,6 +6250,7 @@
 		document.getElementById('toggle-feature-pinning').checked = settings.enablePinning;
 		document.getElementById('toggle-feature-sharing').checked = settings.enableSharing;
 		document.getElementById('toggle-feature-docs').checked = settings.showDocs;
+		document.getElementById('toggle-feature-bookmarks').checked = settings.showBookmarks !== false;
 	}
 
 	function initializeSettings() {
@@ -5732,6 +6270,10 @@
 		});
 		document.getElementById('toggle-feature-docs').addEventListener('change', (e) => {
 			settings.showDocs = e.target.checked;
+			applyFeatureVisibilitySettings();
+		});
+		document.getElementById('toggle-feature-bookmarks').addEventListener('change', (e) => {
+			settings.showBookmarks = e.target.checked;
 			applyFeatureVisibilitySettings();
 		});
 		surfaceOpacitySlider.addEventListener('input', (e) => {
@@ -8066,6 +8608,12 @@
 		document.querySelectorAll('.timeline-item.active, .tag-item.active').forEach(i => i.classList.remove('active'));
 		clearFilterBtn.classList.remove('visible');
 		clearTagsBtn.classList.remove('visible');
+		if (appState.baseMode === 'bookmarks') {
+			bookmarksState.query = '';
+			bookmarkSearchInput.value = '';
+			fetchBookmarks();
+			return;
+		}
 
 		// 如果当前不在 home 模式，切换回去
 		if (appState.baseMode !== 'home') {

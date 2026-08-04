@@ -126,6 +126,16 @@ If you are updating from an older version(<20260206) and want to enable searchin
 
 This will update your search index to include filenames and refresh all existing data.
 
+## Bookmarks
+
+The app includes an authenticated Bookmarks view for saving HTTP(S) links with an optional title and note. New databases receive the `bookmarks` table from `src/schema.sql`. For an existing D1 database, apply the idempotent migration from the project root:
+
+```bash
+npx wrangler d1 execute YOUR_D1_NAME --remote --file=./src/migrate_bookmarks.sql
+```
+
+The Worker also creates the table lazily on the first authenticated bookmark request, but applying the migration explicitly is recommended for deployments.
+
 ## 🔧 Development (Wrangler)
 
 ### 1. Local Development (Simulated Environment)

@@ -36,6 +36,18 @@ CREATE TABLE nodes (
   updated_at INTEGER NOT NULL,
   FOREIGN KEY (parent_id) REFERENCES nodes(id) ON DELETE CASCADE
 );
+
+CREATE TABLE bookmarks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  url TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  description TEXT DEFAULT '' NOT NULL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+CREATE INDEX idx_bookmarks_updated_at ON bookmarks (updated_at DESC);
+
 -- =============================================
 -- Section 2: Full-Text Search Virtual Table
 -- (This is the only FTS-related statement you need)

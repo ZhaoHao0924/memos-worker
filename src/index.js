@@ -3,6 +3,7 @@ const SESSION_DURATION_SECONDS = 30*86400; // Session 有效期: 30 天
 const SESSION_COOKIE = '__session';
 const NOTE_UNLOCK_TTL_SECONDS = 10 * 60;
 let noteLockColumnEnsured = false;
+let bookmarksTableEnsured = false;
 export default {
 	async fetch(request, env, ctx) {
 		return await handleApiRequest(request, env);
@@ -69,6 +70,11 @@ async function handleApiRequest(request, env) {
 	const session = await isSessionAuthenticated(request, env);
 	if (!session) {
 		return jsonResponse({ error: 'Unauthorized' }, 401);
+	}
+
+	const bookmarkMatch = pathname.match(/^\/api\/bookmarks(?:\/(\d+))?$/);
+	if (bookmarkMatch) {
+		return handleBookmarksRequest(request, env, bookmarkMatch[1] || null);
 	}
 
 	if (request.method === 'POST' && pathname === '/api/notes/merge') {
@@ -278,6 +284,164 @@ async function ensureNoteLockColumn(env) {
 			return;
 		}
 		console.error('Ensure lock column failed:', e.message);
+	}
+}
+
+async function ensureBookmarksTable(env) {
+	if (bookmarksTableEnsured) return;
+
+	try {
+		await env.DB.prepare(`
+			CREATE TABLE IF NOT EXISTS bookmarks (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				url TEXT NOT NULL UNIQUE,
+				title TEXT NOT NULL,
+				description TEXT DEFAULT '' NOT NULL,
+				created_at INTEGER NOT NULL,
+				updated_at INTEGER NOT NULL
+			)
+		`).run();
+		await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_bookmarks_updated_at ON bookmarks (updated_at DESC)').run();
+		bookmarksTableEnsured = true;
+	} catch (e) {
+		console.error('Ensure bookmarks table failed:', e.message);
+		throw e;
+	}
+}
+
+function parseBookmarkPayload(payload, existing = {}) {
+	if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+		return { error: 'Invalid bookmark payload.' };
+	}
+
+	const rawUrl = payload.url === undefined ? existing.url : payload.url;
+	if (typeof rawUrl !== 'string' || !rawUrl.trim()) {
+		return { error: 'A URL is required.' };
+	}
+	const trimmedUrl = rawUrl.trim();
+	if (trimmedUrl.length > 2048) {
+		return { error: 'The URL must be 2048 characters or fewer.' };
+	}
+
+	let normalizedUrl;
+	try {
+		const parsedUrl = new URL(trimmedUrl);
+		if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+			return { error: 'Only http and https URLs are allowed.' };
+		}
+		normalizedUrl = parsedUrl.toString();
+	} catch (e) {
+		return { error: 'Please enter a valid URL.' };
+	}
+
+	const rawTitle = payload.title === undefined ? existing.title : payload.title;
+	const title = typeof rawTitle === 'string' ? rawTitle.trim() : '';
+	if (title.length > 200) {
+		return { error: 'The title must be 200 characters or fewer.' };
+	}
+
+	const rawDescription = payload.description === undefined ? existing.description : payload.description;
+	const description = typeof rawDescription === 'string' ? rawDescription.trim() : '';
+	if (description.length > 2000) {
+		return { error: 'The description must be 2000 characters or fewer.' };
+	}
+
+	return {
+		value: {
+			url: normalizedUrl,
+			title: title || new URL(normalizedUrl).hostname,
+			description
+		}
+	};
+}
+
+async function handleBookmarksRequest(request, env, bookmarkId = null) {
+	try {
+		await ensureBookmarksTable(env);
+		const db = env.DB;
+		const id = bookmarkId ? parseInt(bookmarkId, 10) : null;
+
+		if (request.method === 'GET') {
+			if (id !== null) {
+				const bookmark = await db.prepare('SELECT * FROM bookmarks WHERE id = ?').bind(id).first();
+				return bookmark ? jsonResponse(bookmark) : jsonResponse({ error: 'Bookmark not found.' }, 404);
+			}
+
+			const query = new URL(request.url).searchParams.get('q')?.trim() || '';
+			let statement = 'SELECT * FROM bookmarks';
+			const bindings = [];
+			if (query) {
+				statement += ' WHERE instr(lower(title), lower(?)) > 0 OR instr(lower(url), lower(?)) > 0 OR instr(lower(description), lower(?)) > 0';
+				bindings.push(query, query, query);
+			}
+			statement += ' ORDER BY updated_at DESC, id DESC LIMIT 500';
+			const { results } = await db.prepare(statement).bind(...bindings).all();
+			return jsonResponse({ bookmarks: results });
+		}
+
+		if (request.method === 'POST') {
+			if (id !== null) return jsonResponse({ error: 'Invalid bookmark route.' }, 405);
+			let payload;
+			try {
+				payload = await request.json();
+			} catch (e) {
+				return jsonResponse({ error: 'Invalid JSON body.' }, 400);
+			}
+
+			const parsed = parseBookmarkPayload(payload);
+			if (parsed.error) return jsonResponse({ error: parsed.error }, 400);
+
+			const duplicate = await db.prepare('SELECT id FROM bookmarks WHERE url = ?').bind(parsed.value.url).first();
+			if (duplicate) return jsonResponse({ error: 'This URL is already bookmarked.' }, 409);
+
+			const now = Date.now();
+			const bookmark = await db.prepare(`
+				INSERT INTO bookmarks (url, title, description, created_at, updated_at)
+				VALUES (?, ?, ?, ?, ?)
+				RETURNING *
+			`).bind(parsed.value.url, parsed.value.title, parsed.value.description, now, now).first();
+			return jsonResponse(bookmark, 201);
+		}
+
+		if (id === null || !Number.isInteger(id)) {
+			return jsonResponse({ error: 'A valid bookmark ID is required.' }, 400);
+		}
+
+		const existing = await db.prepare('SELECT * FROM bookmarks WHERE id = ?').bind(id).first();
+		if (!existing) return jsonResponse({ error: 'Bookmark not found.' }, 404);
+
+		if (request.method === 'PUT') {
+			let payload;
+			try {
+				payload = await request.json();
+			} catch (e) {
+				return jsonResponse({ error: 'Invalid JSON body.' }, 400);
+			}
+
+			const parsed = parseBookmarkPayload(payload, existing);
+			if (parsed.error) return jsonResponse({ error: parsed.error }, 400);
+
+			const duplicate = await db.prepare('SELECT id FROM bookmarks WHERE url = ? AND id != ?').bind(parsed.value.url, id).first();
+			if (duplicate) return jsonResponse({ error: 'This URL is already bookmarked.' }, 409);
+
+			await db.prepare(`
+				UPDATE bookmarks
+				SET url = ?, title = ?, description = ?, updated_at = ?
+				WHERE id = ?
+			`).bind(parsed.value.url, parsed.value.title, parsed.value.description, Date.now(), id).run();
+			const updatedBookmark = await db.prepare('SELECT * FROM bookmarks WHERE id = ?').bind(id).first();
+			return jsonResponse(updatedBookmark);
+		}
+
+		if (request.method === 'DELETE') {
+			await db.prepare('DELETE FROM bookmarks WHERE id = ?').bind(id).run();
+			return new Response(null, { status: 204 });
+		}
+
+		return jsonResponse({ error: 'Method Not Allowed' }, 405);
+	} catch (e) {
+		console.error('Bookmarks Error:', e.message, e.cause);
+		return jsonResponse({ error: 'Database Error', message: e.message }, 500);
 	}
 }
 
@@ -587,6 +751,7 @@ async function handleGetSettings(request, env) {
 		enablePinning: true,    // 控制置顶功能
 		enableSharing: true,    // 控制分享功能
 		showDocs: true,          // 控制 Docs 链接
+		showBookmarks: true,     // 控制书签
 		enableContentTruncation: false,
 	};
 
