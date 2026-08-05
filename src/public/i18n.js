@@ -95,6 +95,7 @@ const i18n = (function () {
 
 			// --- Bookmarks ---
 			'bookmarks.title': 'Bookmarks',
+			'bookmarks.back': 'Back to notes',
 			'bookmarks.add': 'Save bookmark',
 			'bookmarks.addTitle': 'Save Bookmark',
 			'bookmarks.editTitle': 'Edit Bookmark',
@@ -407,6 +408,7 @@ const i18n = (function () {
 
 			// --- Bookmarks ---
 			'bookmarks.title': '书签',
+			'bookmarks.back': '返回文章',
 			'bookmarks.add': '保存书签',
 			'bookmarks.addTitle': '保存书签',
 			'bookmarks.editTitle': '编辑书签',

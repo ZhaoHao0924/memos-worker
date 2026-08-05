@@ -2718,9 +2718,17 @@
 	padding-bottom: 1rem;
 	border-bottom: 1px solid var(--border-color);
   }
+  .bookmarks-heading {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	gap: 0.75rem;
+  }
   .bookmarks-header h3 {
 	margin: 0;
 	font-size: 1.5rem;
+	min-width: 0;
+	word-break: break-word;
   }
   .bookmarks-header .btn {
 	display: inline-flex;
@@ -3568,7 +3576,15 @@
 
 			<div id='bookmarks-viewer' style='display: none;'>
 				<header class='bookmarks-header'>
-					<h3 data-i18n='bookmarks.title'>Bookmarks</h3>
+					<div class='bookmarks-heading'>
+						<button type='button' id='bookmarks-back-btn' class='btn btn-secondary' data-i18n-title='bookmarks.back' title='Back to notes'>
+							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
+								<path d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'></path>
+							</svg>
+							<span data-i18n='bookmarks.back'>Back to notes</span>
+						</button>
+						<h3 data-i18n='bookmarks.title'>Bookmarks</h3>
+					</div>
 					<button type='button' id='add-bookmark-btn' class='btn btn-primary'>
 						<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
 							<path d='M11 5h2v14h-2zM5 11h14v2H5z'></path>
@@ -4527,6 +4543,7 @@
 	// --- 全局应用状态 ---
 	const appState = {
 		baseMode: 'home',
+		bookmarksReturnMode: 'home',
 		isWaterfall: false,
 		isWide: false,
 		filters: {
@@ -4679,6 +4696,7 @@
 	const bookmarksTabBtn = document.getElementById('bookmarks-tab-btn');
 	const bookmarksViewer = document.getElementById('bookmarks-viewer');
 	const bookmarksContent = document.getElementById('bookmarks-content');
+	const bookmarksBackBtn = document.getElementById('bookmarks-back-btn');
 	const addBookmarkBtn = document.getElementById('add-bookmark-btn');
 	const bookmarkSearchInput = document.getElementById('bookmark-search-input');
 	const bookmarkModalOverlay = document.getElementById('bookmark-modal-overlay');
@@ -5343,6 +5361,7 @@
 	mobileBookmarksBtn.addEventListener('click', () => {
 		if (appState.baseMode !== 'bookmarks') showBookmarksViewer();
 	});
+	bookmarksBackBtn.addEventListener('click', returnFromBookmarks);
 	closeBookmarkModalBtn.addEventListener('click', closeBookmarkModal);
 	closeBookmarkModalAction.addEventListener('click', closeBookmarkModal);
 	bookmarkModalOverlay.addEventListener('click', event => {
@@ -5552,6 +5571,8 @@
 	}
 
 	async function showBookmarksViewer() {
+		const noteModes = ['home', 'favorites', 'archive'];
+		appState.bookmarksReturnMode = noteModes.includes(appState.baseMode) ? appState.baseMode : 'home';
 		appState.baseMode = 'bookmarks';
 		hideAttachmentsViewer();
 		updateSidebarTabsUI();
@@ -5723,6 +5744,15 @@
 		bookmarksViewer.style.display = 'none';
 		appContainer.style.display = 'block';
 		appLayoutContainer.classList.remove('attachments-mode', 'bookmarks-mode');
+	}
+
+	function returnFromBookmarks() {
+		const returnTabs = {
+			home: homeTabBtn,
+			favorites: favoritesTabBtn,
+			archive: archiveTabBtn
+		};
+		(returnTabs[appState.bookmarksReturnMode] || homeTabBtn).click();
 	}
 
 	// --- 右侧栏按钮的点击事件 ---
