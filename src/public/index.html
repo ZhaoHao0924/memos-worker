@@ -387,6 +387,16 @@
 	gap: 0.5rem;
   }
 
+  #mobile-bookmarks-btn {
+	display: none;
+  }
+
+  @media (max-width: 1150px) {
+	#mobile-bookmarks-btn {
+		display: flex;
+	}
+  }
+
   #theme-toggle-btn {
 	width: 36px;
 	height: 36px;
@@ -3408,6 +3418,11 @@
 								<path d='M11 7h2v6h-2zM8 9h8v2H8z'></path>
 							</svg>
 						</button>
+						<button type='button' id='mobile-bookmarks-btn' class='icon-btn' data-i18n-title='bookmarks.title' title='Bookmarks'>
+							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
+								<path d='M6 2h12c1.1 0 2 .9 2 2v18l-8-3.5L4 22V4c0-1.1.9-2 2-2zm0 2v14.9l6-2.6 6 2.6V4H6z'></path>
+							</svg>
+						</button>
 						<button id='waterfall-toggle-btn' class='icon-btn' data-i18n-title='header.waterfall' title='Toggle waterfall mode'>
 							<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'><path d='M0 0h24v24H0V0z' fill='none' /><path d='M10 18h5V5h-5v13zm-6 0h5V5H4v13zM16 5v13h5V5h-5z' /></svg>
 						</button>
@@ -4543,6 +4558,7 @@
 	const scrollLoader = document.getElementById('scroll-loader');
 	const refreshBtn = document.getElementById('refresh-btn');
 	const quickAddBookmarkBtn = document.getElementById('quick-add-bookmark-btn');
+	const mobileBookmarksBtn = document.getElementById('mobile-bookmarks-btn');
 	const themeToggleBtn = document.getElementById('theme-toggle-btn');
 	const customModalOverlay = document.getElementById('custom-modal-overlay');
 	// Alert elements
@@ -5324,6 +5340,9 @@
 
 	addBookmarkBtn.addEventListener('click', () => openBookmarkModal());
 	quickAddBookmarkBtn.addEventListener('click', () => openBookmarkModal());
+	mobileBookmarksBtn.addEventListener('click', () => {
+		if (appState.baseMode !== 'bookmarks') showBookmarksViewer();
+	});
 	closeBookmarkModalBtn.addEventListener('click', closeBookmarkModal);
 	closeBookmarkModalAction.addEventListener('click', closeBookmarkModal);
 	bookmarkModalOverlay.addEventListener('click', event => {
@@ -6120,6 +6139,7 @@
 		const showBookmarks = settings.showBookmarks !== false;
 		bookmarksTabBtn.style.display = showBookmarks ? '' : 'none';
 		quickAddBookmarkBtn.style.display = showBookmarks ? '' : 'none';
+		mobileBookmarksBtn.style.display = showBookmarks ? '' : 'none';
 		if (!showBookmarks && appState.baseMode === 'bookmarks') {
 			homeTabBtn.click();
 		}
