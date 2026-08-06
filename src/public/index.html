@@ -321,6 +321,62 @@
   #app-layout-container.app-visible #right-sidebar {
 	display: block;
   }
+
+  #mobile-primary-nav,
+  #mobile-sidebar-backdrop,
+  .mobile-sidebar-header {
+	display: none;
+  }
+
+  #mobile-sidebar-toggle-btn {
+	display: none;
+  }
+
+  .mobile-nav-btn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	min-height: 44px;
+	padding: 0.25rem 0.15rem;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--text-secondary);
+	font: inherit;
+	font-size: 0.68rem;
+	line-height: 1.1;
+	text-decoration: none;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	-webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-btn svg {
+	width: 21px;
+	height: 21px;
+	margin-bottom: 0.15rem;
+	fill: currentColor;
+	flex-shrink: 0;
+  }
+
+  .mobile-nav-btn span {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+  }
+
+  .mobile-nav-btn.active {
+	background-color: rgba(54, 124, 255, 0.12);
+	color: var(--primary-color);
+	font-weight: 600;
+  }
+
+  body {
+	overflow-x: hidden;
+  }
+
   @media (max-width: 600px) {
 	#app-layout-container {
 		padding: 2rem .5rem 0.5rem;
@@ -391,9 +447,107 @@
 	display: none;
   }
 
-  @media (max-width: 1150px) {
+	@media (max-width: 1150px) {
 	#mobile-bookmarks-btn {
 		display: flex;
+	}
+  }
+
+  @media (max-width: 1150px) {
+	#app-layout-container {
+		min-height: 100dvh;
+		padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	#main-content-area .container {
+		width: 100%;
+		max-width: none;
+	}
+
+	#mobile-primary-nav {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+		align-items: stretch;
+		gap: 0.15rem;
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 900;
+		padding: 0.35rem 0.35rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+		border-top: 1px solid var(--border-color);
+		background-color: var(--surface-color);
+		background: color-mix(in srgb, var(--surface-color) 94%, transparent);
+		backdrop-filter: blur(14px);
+		box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+	}
+
+	#mobile-sidebar-toggle-btn {
+		display: inline-flex;
+	}
+
+	#mobile-sidebar-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 1090;
+		background: rgba(0, 0, 0, 0.45);
+	}
+
+	#left-sidebar {
+		display: none !important;
+		position: fixed;
+		inset: 0 auto 0 0;
+		z-index: 1091;
+		width: min(86vw, 340px);
+		max-height: none;
+		height: 100dvh;
+		box-sizing: border-box;
+		padding: 0.75rem;
+		overflow-y: auto;
+		background: var(--surface-color);
+		box-shadow: 8px 0 24px rgba(0, 0, 0, 0.18);
+		transform: translateX(-105%);
+		transition: transform 0.25s ease;
+	}
+
+	#app-layout-container.mobile-sidebar-open #left-sidebar {
+		display: block !important;
+		transform: translateX(0);
+	}
+
+	#app-layout-container.mobile-sidebar-open #mobile-sidebar-backdrop {
+		display: block;
+	}
+
+	.mobile-sidebar-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 40px;
+		margin-bottom: 0.5rem;
+		padding: 0 0.25rem 0.5rem;
+		border-bottom: 1px solid var(--border-color);
+		color: var(--text-color);
+	}
+
+	#back-to-top-btn {
+		bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+		right: 1rem;
+		width: 44px;
+		height: 44px;
+	}
+
+	#more-menu-popover {
+		max-width: calc(100vw - 1rem);
+	}
+
+	.share-file-btn,
+	.delete-file-btn,
+	.code-block-wrapper .copy-code-btn,
+	.timeline-filter-btn {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
 	}
   }
 
@@ -2673,6 +2827,27 @@
 	align-items: center;
 	gap: 1rem;
   }
+  .attachments-heading {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	justify-content: center;
+  }
+  .attachments-heading h3 {
+	margin: 0;
+	font-size: 1.5rem;
+  }
+  .viewer-back-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+  }
+  .viewer-back-btn svg {
+	width: 18px;
+	height: 18px;
+	fill: currentColor;
+  }
   .attachments-header h3 {
 	margin: 0;
 	font-size: 1.5rem;
@@ -2906,6 +3081,118 @@
 	}
   }
   @media (max-width: 600px) {
+	body {
+		font-size: 0.95rem;
+	}
+	#app-layout-container {
+		padding: 0.75rem 0.5rem calc(4.75rem + env(safe-area-inset-bottom, 0px));
+	}
+	#main-content-area .container,
+	.container {
+		width: 100%;
+		min-width: 0 !important;
+		padding: 0;
+	}
+	.app-header {
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin-bottom: 0.75rem;
+	}
+	#header-title {
+		min-width: 0;
+		flex: 1 1 auto;
+		font-size: 1.25rem;
+	}
+	#enter-fullscreen-btn,
+	.note .fullscreen-edit {
+		display: inline-flex;
+	}
+	.header-actions {
+		flex: 1 1 100%;
+		justify-content: flex-end;
+		gap: 0.2rem;
+	}
+	.header-actions .icon-btn {
+		width: 36px;
+		height: 36px;
+	}
+	#note-form {
+		padding: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+	.form-actions {
+		gap: 0.5rem;
+		align-items: stretch;
+	}
+	.toolbar-group-left,
+	.toolbar-group-right {
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+	.toolbar-group-right {
+		margin-left: auto;
+		justify-content: flex-end;
+	}
+	#submit-btn {
+		min-height: 36px;
+	}
+	.note {
+		padding: 0.75rem;
+	}
+	.note-header {
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+	.note-meta {
+		min-width: 0;
+		font-size: 0.75rem;
+		overflow-wrap: anywhere;
+	}
+	.note-actions {
+		flex-shrink: 0;
+	}
+	.note-content {
+		font-size: 0.95rem;
+		overflow-wrap: anywhere;
+	}
+	.note-content pre,
+	.edit-preview pre {
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+	#note-form.split-mode #main-editor-container,
+	.note.split-mode .edit-area {
+		flex-direction: column;
+	}
+	#notes-section.waterfall-mode #notes-container {
+		grid-template-columns: 1fr;
+		grid-auto-rows: auto;
+	}
+	.attachments-grid,
+	#attachments-content .attachments-grid {
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 132px), 1fr));
+		gap: 0.6rem;
+		padding: 0.5rem;
+	}
+	.attachments-heading {
+		justify-content: flex-start;
+		gap: 0.5rem;
+	}
+	.attachments-heading h3 {
+		font-size: 1.25rem;
+	}
+	.attachments-tabs {
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+		overflow-x: auto;
+		justify-content: flex-start;
+		-webkit-overflow-scrolling: touch;
+	}
+	.tab-btn {
+		flex-shrink: 0;
+		white-space: nowrap;
+	}
 	.bookmarks-header {
 		align-items: stretch;
 		flex-direction: column;
@@ -2915,6 +3202,146 @@
 	}
 	#bookmarks-content {
 		grid-template-columns: 1fr;
+	}
+	.bookmark-search-label {
+		width: 100%;
+	}
+	.bookmark-card {
+		min-height: 0;
+		padding: 0.8rem;
+	}
+	.custom-modal-overlay {
+		align-items: flex-start;
+		padding: 0.75rem;
+		box-sizing: border-box;
+		overflow-y: auto;
+	}
+	.custom-modal-box,
+	#settings-modal-box,
+	#bookmark-modal-box,
+	#share-link-modal-box {
+		width: 100%;
+		max-width: none;
+		max-height: calc(100dvh - 1.5rem);
+		box-sizing: border-box;
+		margin: auto;
+	}
+	.custom-modal-actions {
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.custom-modal-actions .btn {
+		flex: 1 1 120px;
+		min-height: 40px;
+	}
+	.settings-header {
+		padding: 0.75rem 1rem;
+	}
+	.settings-content {
+		max-height: calc(100dvh - 6rem);
+		padding: 0.75rem 1rem 1rem;
+	}
+	.setting-item {
+		align-items: flex-start;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding-left: 0;
+	}
+	.setting-item label {
+		min-width: 0;
+		flex: 1 1 55%;
+	}
+	.setting-item input[type='text'],
+	.setting-item input[type='range'] {
+		width: 100%;
+		flex-basis: 100%;
+	}
+	.setting-item input[type='file'],
+	.setting-item input[type='color'] {
+		max-width: 100%;
+	}
+	.tag-dropdown-container {
+		width: min(280px, calc(100vw - 1rem));
+		max-width: calc(100vw - 1rem);
+	}
+	#bookmark-form-content {
+		padding: 1rem 1rem 0;
+	}
+	#bookmark-modal-box .custom-modal-actions {
+		padding: 0 1rem 1rem;
+	}
+	#share-link-modal-box .share-link-value-row {
+		flex-direction: column;
+		gap: 0.5rem !important;
+	}
+	#share-link-modal-box .share-link-value-row input,
+	#share-link-modal-box .share-link-value-row .btn {
+		width: 100%;
+		box-sizing: border-box;
+		min-height: 40px;
+	}
+	#share-link-modal-box .share-expiration-row {
+		align-items: stretch !important;
+		flex-direction: column;
+		gap: 0.5rem !important;
+	}
+	#share-link-modal-box .share-expiration-row label,
+	#share-link-modal-box .share-expiration-row select,
+	#share-link-modal-box .share-expiration-row span {
+		width: 100% !important;
+		text-align: left !important;
+	}
+	#image-preview-caption {
+		max-width: 100%;
+		padding-top: 0.75rem;
+	}
+	.image-preview-close,
+	.video-preview-close {
+		top: 0.35rem;
+		right: 0.75rem;
+		font-size: 2.5rem;
+	}
+	#fullscreen-editor-overlay {
+		padding: 0;
+	}
+	#fullscreen-editor-overlay .custom-modal-box {
+		width: 100%;
+		height: 100dvh;
+		max-height: none;
+		border: 0;
+	}
+	#editor-toolbar {
+		max-height: 38dvh;
+		padding: 0.5rem;
+		gap: 0.35rem;
+		flex-wrap: wrap;
+		overflow-y: auto;
+	}
+	.toolbar-left,
+	.toolbar-right {
+		width: 100%;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+	.toolbar-right {
+		justify-content: flex-end;
+	}
+	#editor-content-area[data-view-mode='split'] {
+		flex-direction: column;
+	}
+	#editor-content-area[data-view-mode='split'] #fs-editor-textarea,
+	#editor-content-area[data-view-mode='split'] #fs-preview-pane {
+		width: 100%;
+		flex-basis: 50%;
+		min-height: 0;
+	}
+	#editor-content-area[data-view-mode='split'] #fs-editor-divider {
+		display: none;
+	}
+	#toast-notification {
+		max-width: calc(100vw - 2rem);
+		box-sizing: border-box;
+		text-align: center;
 	}
   }
   .attachment-month-group {
@@ -3339,6 +3766,10 @@
 
 	<!-- 左侧栏 -->
 	<aside id='left-sidebar'>
+		<div class='mobile-sidebar-header'>
+			<strong data-i18n='sidebar.filters'>Filters</strong>
+			<button type='button' id='mobile-sidebar-close-btn' class='icon-btn' data-i18n-title='common.close' title='Close'>&times;</button>
+		</div>
 		<!-- --- 全局搜索框 --- -->
 		<div class='sidebar-search-container'>
 			<svg class='search-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
@@ -3426,6 +3857,11 @@
 							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
 								<path
 									d='M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z'></path>
+							</svg>
+						</button>
+						<button type='button' id='mobile-sidebar-toggle-btn' class='icon-btn' data-i18n-title='sidebar.filters' title='Filters'>
+							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
+								<path d='M3 5h18v2H3V5zm4 6h10v2H7v-2zm3 6h4v2h-4v-2z'></path>
 							</svg>
 						</button>
 						<button type='button' id='quick-add-bookmark-btn' class='icon-btn' data-i18n-title='bookmarks.add' title='Save bookmark'>
@@ -3569,7 +4005,15 @@
 			<!-- 附件浏览页面容器 -->
 			<div id="attachments-viewer" style="display: none;">
 				<header class="attachments-header">
-					<h3 data-i18n='attachments.title'>Files</h3>
+					<div class='attachments-heading'>
+						<button type='button' id='attachments-back-btn' class='btn btn-secondary viewer-back-btn' data-i18n-title='sidebar.home' title='Home'>
+							<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'>
+								<path d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'></path>
+							</svg>
+							<span data-i18n='sidebar.home'>Home</span>
+						</button>
+						<h3 data-i18n='attachments.title'>Files</h3>
+					</div>
 					<div class="attachments-tabs">
 						<button class="tab-btn active" data-filter="all" data-i18n='attachments.all'>✨ All</button>
 						<button class="tab-btn" data-filter="image" data-i18n='attachments.images'>🏞️ Images</button>
@@ -3647,12 +4091,40 @@
 				</svg>
 				<span data-i18n='bookmarks.title'>Bookmarks</span>
 			</button>
-			<a href="/docs" target="_blank" class="sidebar-tab-btn" data-i18n-title="sidebar.openDocs" title="Open Docs">
+			<a href="/docs" class="sidebar-tab-btn" data-mobile-feature='docs' data-i18n-title="sidebar.openDocs" title="Open Docs">
 				<svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
 				<span data-i18n="sidebar.docs">Docs</span>
 			</a>
 		</div>
 	</aside>
+
+	<nav id='mobile-primary-nav' aria-label='Primary navigation'>
+		<button type='button' id='mobile-home-tab-btn' class='mobile-nav-btn' data-tab-name='home' data-i18n-title='sidebar.home' title='Home'>
+			<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z'></path></svg>
+			<span data-i18n='sidebar.home'>Home</span>
+		</button>
+		<button type='button' id='mobile-favorites-tab-btn' class='mobile-nav-btn' data-tab-name='favorites' data-mobile-feature='favorites' data-i18n-title='sidebar.favorites' title='Favorites'>
+			<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51z'></path></svg>
+			<span data-i18n='sidebar.favorites'>Favorites</span>
+		</button>
+		<button type='button' id='mobile-archive-tab-btn' class='mobile-nav-btn' data-tab-name='archive' data-mobile-feature='archive' data-i18n-title='sidebar.archive' title='Archive'>
+			<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM6.24 5h11.52l.83 1H5.41l.83-1zM5 19V8h14v11H5zm11-5.5l-4 4-4-4 1.41-1.41L11 13.67V10h2v3.67l1.59-1.58L16 13.5z'></path></svg>
+			<span data-i18n='sidebar.archive'>Archive</span>
+		</button>
+		<button type='button' id='mobile-attachments-tab-btn' class='mobile-nav-btn' data-tab-name='attachments' data-i18n-title='sidebar.files' title='Files'>
+			<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z'></path></svg>
+			<span data-i18n='sidebar.files'>Files</span>
+		</button>
+		<button type='button' id='mobile-bookmarks-tab-btn' class='mobile-nav-btn' data-tab-name='bookmarks' data-mobile-feature='bookmarks' data-i18n-title='bookmarks.title' title='Bookmarks'>
+			<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M6 2h12c1.1 0 2 .9 2 2v18l-8-3.5L4 22V4c0-1.1.9-2 2-2zm0 2v14.9l6-2.6 6 2.6V4H6z'></path></svg>
+			<span data-i18n='bookmarks.title'>Bookmarks</span>
+		</button>
+		<a id='mobile-docs-link' class='mobile-nav-btn' data-mobile-feature='docs' href='/docs' data-i18n-title='sidebar.docs' title='Docs'>
+			<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-4-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'></path></svg>
+			<span data-i18n='sidebar.docs'>Docs</span>
+		</a>
+	</nav>
+	<div id='mobile-sidebar-backdrop'></div>
 
 </div>
 
@@ -4076,20 +4548,20 @@
 				<p data-i18n='shareModal.description'>Anyone with these public links can view this memo.</p>
 				<div class="share-link-item" style="margin-bottom: 1rem;">
 					<label style="font-weight: 500;" data-i18n='shareModal.displayLink'>Display Link</label>
-					<div style="display: flex; gap: 0.5rem;">
+					<div class="share-link-value-row" style="display: flex; gap: 0.5rem;">
 						<input type="text" id="share-display-link-input" readonly style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color);">
 						<button id="copy-display-link-btn" class="btn" data-i18n='common.copy'>Copy</button>
 					</div>
 				</div>
 				<div class="share-link-item" style="margin-bottom: 1.5rem;">
 					<label style="font-weight: 500;" data-i18n='shareModal.rawLink'>Raw Content Link</label>
-					<div style="display: flex; gap: 0.5rem;">
+					<div class="share-link-value-row" style="display: flex; gap: 0.5rem;">
 						<input type="text" id="share-raw-link-input" readonly style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color);">
 						<button id="copy-raw-link-btn" class="btn" data-i18n='common.copy'>Copy</button>
 					</div>
 				</div>
 
-				<div class="share-link-item" style="display: flex; align-items: center; gap: 1rem;">
+				<div class="share-link-item share-expiration-row" style="display: flex; align-items: center; gap: 1rem;">
 					<label for="expiration-select" style="font-weight: 500; flex-shrink: 0;" data-i18n='shareModal.expiresIn'>Expires in:</label>
 					<select id="expiration-select" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color); color: var(--text-color);">
 						<option value="3600" data-i18n='expiration.1hour'>1 Hour</option>
@@ -4552,6 +5024,7 @@
 	const appState = {
 		baseMode: 'home',
 		bookmarksReturnMode: 'home',
+		attachmentsReturnMode: 'home',
 		isWaterfall: false,
 		isWide: false,
 		filters: {
@@ -4584,6 +5057,15 @@
 	const refreshBtn = document.getElementById('refresh-btn');
 	const quickAddBookmarkBtn = document.getElementById('quick-add-bookmark-btn');
 	const mobileBookmarksBtn = document.getElementById('mobile-bookmarks-btn');
+	const mobileSidebarToggleBtn = document.getElementById('mobile-sidebar-toggle-btn');
+	const mobileSidebarCloseBtn = document.getElementById('mobile-sidebar-close-btn');
+	const mobileSidebarBackdrop = document.getElementById('mobile-sidebar-backdrop');
+	const mobileHomeTabBtn = document.getElementById('mobile-home-tab-btn');
+	const mobileFavoritesTabBtn = document.getElementById('mobile-favorites-tab-btn');
+	const mobileArchiveTabBtn = document.getElementById('mobile-archive-tab-btn');
+	const mobileAttachmentsTabBtn = document.getElementById('mobile-attachments-tab-btn');
+	const mobileBookmarksTabBtn = document.getElementById('mobile-bookmarks-tab-btn');
+	const mobileDocsLink = document.getElementById('mobile-docs-link');
 	const themeToggleBtn = document.getElementById('theme-toggle-btn');
 	const customModalOverlay = document.getElementById('custom-modal-overlay');
 	// Alert elements
@@ -4698,6 +5180,7 @@
 	const imgurClientIdInput = document.getElementById('imgur-client-id');
 	const uploadDestinationRadios = document.querySelectorAll('input[name="upload-destination"]');
 	const attachmentsTabBtn = document.getElementById('attachments-tab-btn');
+	const attachmentsBackBtn = document.getElementById('attachments-back-btn');
 	const attachmentsViewer = document.getElementById('attachments-viewer');
 	const attachmentsContent = document.getElementById('attachments-content');
 	const attachmentsTabs = document.querySelector('.attachments-tabs');
@@ -4751,8 +5234,19 @@
 		refreshLocalizedDynamicUI();
 	}
 
+	function closeMobileSidebar() {
+		appLayoutContainer.classList.remove('mobile-sidebar-open');
+	}
+
+	function toggleMobileSidebar() {
+		appLayoutContainer.classList.toggle('mobile-sidebar-open');
+	}
+
 	if (langToggleBtn) langToggleBtn.addEventListener('click', switchLanguage);
 	if (loginLangToggleBtn) loginLangToggleBtn.addEventListener('click', switchLanguage);
+	if (mobileSidebarToggleBtn) mobileSidebarToggleBtn.addEventListener('click', toggleMobileSidebar);
+	if (mobileSidebarCloseBtn) mobileSidebarCloseBtn.addEventListener('click', closeMobileSidebar);
+	if (mobileSidebarBackdrop) mobileSidebarBackdrop.addEventListener('click', closeMobileSidebar);
 
 	expirationSelect.addEventListener('change', async () => {
 		const shareModal = document.getElementById('share-link-modal-overlay');
@@ -5592,6 +6086,8 @@
 	}
 
 	async function showAttachmentsViewer() {
+		const noteModes = ['home', 'favorites', 'archive'];
+		appState.attachmentsReturnMode = noteModes.includes(appState.baseMode) ? appState.baseMode : 'home';
 		appState.baseMode = 'attachments';
 		hideAttachmentsViewer();
 		updateSidebarTabsUI();
@@ -5763,6 +6259,17 @@
 		(returnTabs[appState.bookmarksReturnMode] || homeTabBtn).click();
 	}
 
+	function returnFromAttachments() {
+		const returnTabs = {
+			home: homeTabBtn,
+			favorites: favoritesTabBtn,
+			archive: archiveTabBtn
+		};
+		(returnTabs[appState.attachmentsReturnMode] || homeTabBtn).click();
+	}
+
+	attachmentsBackBtn.addEventListener('click', returnFromAttachments);
+
 	// --- 右侧栏按钮的点击事件 ---
 	homeTabBtn.addEventListener('click', () => {
 		if (appState.baseMode === 'home') return;
@@ -5799,6 +6306,15 @@
 	bookmarksTabBtn.addEventListener('click', () => {
 		if (appState.baseMode === 'bookmarks') return;
 		showBookmarksViewer();
+	});
+
+	mobileHomeTabBtn.addEventListener('click', () => homeTabBtn.click());
+	mobileFavoritesTabBtn.addEventListener('click', () => favoritesTabBtn.click());
+	mobileArchiveTabBtn.addEventListener('click', () => archiveTabBtn.click());
+	mobileAttachmentsTabBtn.addEventListener('click', () => attachmentsTabBtn.click());
+	mobileBookmarksTabBtn.addEventListener('click', () => bookmarksTabBtn.click());
+	[mobileHomeTabBtn, mobileFavoritesTabBtn, mobileArchiveTabBtn, mobileAttachmentsTabBtn, mobileBookmarksTabBtn].forEach(button => {
+		button.addEventListener('click', closeMobileSidebar);
 	});
 
 	// --- 为附件页面的子选项卡添加事件委托 ---
@@ -6174,8 +6690,13 @@
 		// 控制右侧边栏的按钮
 		document.getElementById('favorites-tab-btn').style.display = settings.showFavorites ? '' : 'none';
 		document.getElementById('archive-tab-btn').style.display = settings.showArchive ? '' : 'none';
+		mobileFavoritesTabBtn.style.display = settings.showFavorites ? '' : 'none';
+		mobileArchiveTabBtn.style.display = settings.showArchive ? '' : 'none';
+		if (!settings.showFavorites && appState.baseMode === 'favorites') homeTabBtn.click();
+		if (!settings.showArchive && appState.baseMode === 'archive') homeTabBtn.click();
 		const showBookmarks = settings.showBookmarks !== false;
 		bookmarksTabBtn.style.display = showBookmarks ? '' : 'none';
+		mobileBookmarksTabBtn.style.display = showBookmarks ? '' : 'none';
 		quickAddBookmarkBtn.style.display = showBookmarks ? '' : 'none';
 		mobileBookmarksBtn.style.display = showBookmarks ? '' : 'none';
 		if (!showBookmarks && appState.baseMode === 'bookmarks') {
@@ -6186,6 +6707,7 @@
 		if (docsLink) {
 			docsLink.style.display = settings.showDocs ? '' : 'none';
 		}
+		mobileDocsLink.style.display = settings.showDocs ? '' : 'none';
 	}
 	/**
 	 * 根据当前加载的设置，应用所有UI效果
@@ -6589,27 +7111,10 @@
 
 	// --- 右侧栏Tab按钮的交互逻辑 ---
 	function updateSidebarTabsUI() {
-		document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
+		document.querySelectorAll('.sidebar-tab-btn, .mobile-nav-btn').forEach(btn => {
 			btn.classList.toggle('active', btn.dataset.tabName === appState.baseMode);
 		});
 	}
-
-	homeTabBtn.addEventListener('click', () => {
-		if (appState.baseMode === 'home') return;
-		appState.baseMode = 'home';
-		updateSidebarTabsUI();
-		updateEditorVisibility();
-		reloadNotes();
-	});
-
-	favoritesTabBtn.addEventListener('click', () => {
-		if (appState.baseMode === 'favorites') return;
-		appState.baseMode = 'favorites';
-		updateSidebarTabsUI();
-		updateEditorVisibility();
-		reloadNotes();
-	});
-
 
 	/**
 	 * 初始化侧边栏的折叠状态
@@ -7619,6 +8124,7 @@
 		// 确保只有在登录成功后才执行这些操作
 		initializeCollapsibleSidebars(); // 初始化侧边栏折叠状态
 		initializeViewMode(); // 初始化宽屏模式
+		updateSidebarTabsUI();
 		updateEditorVisibility();
 		loadAndRenderStats();
 		loadAndRenderTags();

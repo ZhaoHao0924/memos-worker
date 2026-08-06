@@ -60,10 +60,11 @@
   .note-meta { font-size: 0.8rem; color: var(--text-secondary); }
   .note-content { word-wrap: break-word; font-size: 1rem; }
   .note-content a { color: var(--primary-color); }
-  .note-content pre { padding: 1rem; border-radius: 8px; overflow-x: auto; background-color: rgba(0,0,0,0.05); }
+  .note-content { overflow-wrap: anywhere; }
+  .note-content pre { max-width: 100%; box-sizing: border-box; padding: 1rem; border-radius: 8px; overflow-x: auto; background-color: rgba(0,0,0,0.05); }
   html[data-theme='dark'] .note-content pre { background-color: rgba(0,0,0,0.2); }
   .note-content pre code { background: none; padding: 0; }
-  .note-content table { width: 100%; border-collapse: collapse; margin: 1em 0; border: 1px solid var(--border-color); }
+  .note-content table { width: max-content; min-width: 100%; border-collapse: collapse; margin: 1em 0; border: 1px solid var(--border-color); }
   .note-content th, .note-content td { padding: 10px 15px; border: 1px solid var(--border-color); text-align: left; }
   .note-content thead th { background-color: rgba(0,0,0,0.05); }
   #loader { text-align: center; color: var(--text-secondary); padding: 3rem 0; }
@@ -84,12 +85,46 @@
   html[data-theme='dark'] .attachment-link { background-color: rgba(74, 85, 104, 0.5); color: #e2e8f0; border-color: #718096; }
   html[data-theme='dark'] .attachment-link:hover { background-color: rgba(45, 55, 72, 0.7); }
 
+  @media (max-width: 600px) {
+	body {
+		padding: 1rem 0.75rem;
+	}
+	.wrapper {
+		width: 100%;
+	}
+	header {
+		margin-bottom: 1rem;
+	}
+	header h3 {
+		font-size: 1.25rem;
+	}
+	.note {
+		padding: 0.85rem;
+	}
+	.note-header {
+		flex-wrap: wrap;
+	}
+	.note-content table {
+		display: block;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	.note-content th,
+	.note-content td {
+		padding: 8px 10px;
+		white-space: nowrap;
+	}
+	.attachment-link {
+		font-size: 0.9rem;
+	}
+  }
+
 </style>
 <body>
 
 <div class="wrapper">
 	<header>
-		<h3><a href='https://github.com/souvenp/memos-worker' target="_blank">MEMOS</a></h3>
+		<h3><a href='/'>MEMOS</a></h3>
 		<div style="display: flex; align-items: center; gap: 0.5rem;">
 			<button type='button' id='lang-toggle-btn' class='icon-btn' title='Switch Language' style='font-size: 0.8rem; width: auto; padding: 0 0.5rem;'>中/EN</button>
 			<button type='button' id='theme-toggle-btn' class='icon-btn' data-i18n-title='sharePage.toggleTheme' title='Toggle Theme'></button>

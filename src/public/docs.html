@@ -105,6 +105,7 @@
   .resizer { width: 5px; background-color: var(--bg-color); cursor: col-resize; flex-shrink: 0; z-index: 10; }
   .resizer:hover { background-color: var(--accent-color); }
   #editor-actions { position: absolute; top: 10px; right: 20px; z-index: 101; display: flex; align-items: center; gap: 10px; }
+  .mobile-docs-action, #mobile-docs-backdrop { display: none; }
   #save-btn { background-color: var(--accent-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.2s ease, opacity 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
   #save-btn:hover { opacity: 0.9; }
   #save-btn:disabled { background-color: var(--text-muted-color); cursor: not-allowed; opacity: 0.7; }
@@ -246,6 +247,117 @@
 	font-weight: 600;
   }
   /* END OF NEW CSS */
+
+  @media (max-width: 900px) {
+	body {
+		overflow: hidden;
+	}
+	.app-container {
+		position: relative;
+		min-width: 0;
+	}
+	#sidebar-left,
+	#sidebar-right {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		z-index: 110;
+		width: min(84vw, 320px);
+		min-width: 0;
+		max-width: none;
+		height: 100dvh;
+		box-sizing: border-box;
+		resize: none;
+		transition: transform 0.25s ease;
+		box-shadow: 0 0 24px rgba(0, 0, 0, 0.18);
+	}
+	#sidebar-left {
+		left: 0;
+		transform: translateX(-105%);
+	}
+	#sidebar-right {
+		right: 0;
+		transform: translateX(105%);
+	}
+	.app-container.file-tree-open #sidebar-left,
+	.app-container.outline-open #sidebar-right {
+		transform: translateX(0);
+	}
+	#mobile-docs-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 105;
+		background: rgba(0, 0, 0, 0.45);
+	}
+	.app-container.file-tree-open #mobile-docs-backdrop,
+	.app-container.outline-open #mobile-docs-backdrop {
+		display: block;
+	}
+	.resizer {
+		display: none;
+	}
+	#editor-container {
+		width: 100%;
+		min-width: 0;
+	}
+	#editor-actions {
+		top: 0;
+		left: 0;
+		right: 0;
+		padding: 0.5rem;
+		box-sizing: border-box;
+		justify-content: flex-end;
+		gap: 0.35rem;
+		flex-wrap: wrap;
+		background-color: var(--editor-bg);
+		background: color-mix(in srgb, var(--editor-bg) 92%, transparent);
+		backdrop-filter: blur(10px);
+	}
+	.mobile-docs-action {
+		display: inline-flex;
+	}
+	#save-btn {
+		min-height: 36px;
+	}
+	#editor {
+		min-width: 0;
+	}
+	.ql-editor {
+		padding: 64px 1rem 2rem;
+		overflow-wrap: anywhere;
+	}
+	.ql-editor pre,
+	.ql-editor table,
+	.ql-table-container {
+		max-width: 100%;
+		overflow-x: auto;
+	}
+	.ql-table-container table {
+		min-width: 100%;
+		width: max-content;
+	}
+	.sidebar-header {
+		padding: 0.75rem 1rem;
+	}
+  }
+
+  @media (max-width: 480px) {
+	#editor-actions {
+		gap: 0.2rem;
+	}
+	#save-btn {
+		padding: 6px 8px;
+		font-size: 0.85rem;
+	}
+	.action-btn {
+		width: 36px;
+		height: 36px;
+	}
+	.ql-editor {
+		padding-left: 0.85rem;
+		padding-right: 0.85rem;
+	}
+  }
 </style>
 <body>
 <div class="app-container">
@@ -261,20 +373,23 @@
 		<div id="file-tree-container"><ul id="file-tree"></ul></div>
 	</aside>
 	<div class="resizer" id="resizer-left"></div>
-	<main id="editor-container">
-		<div id="editor"><!-- Quill editor mounts here --></div>
-		<div id="editor-actions">
-			<button id="theme-toggle-btn" class="action-btn" data-i18n-title="docs.toggleTheme" title="Toggle Theme"><i class="fas fa-moon"></i></button>
-			<button id="save-btn" disabled><i class="fas fa-save"></i> <span data-i18n="common.save">Save</span></button>
-			<a href="/" class="action-btn" data-i18n-title="docs.backToHome" title="Back to Home" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i></a>
-		</div>
+		<main id="editor-container">
+			<div id="editor"><!-- Quill editor mounts here --></div>
+			<div id="editor-actions">
+				<button id="mobile-file-tree-btn" class="action-btn mobile-docs-action" data-i18n-title="docs.title" title="Documents"><i class="fas fa-folder-tree"></i></button>
+				<button id="mobile-outline-btn" class="action-btn mobile-docs-action" data-i18n-title="docs.outline" title="Outline"><i class="fas fa-list"></i></button>
+				<button id="theme-toggle-btn" class="action-btn" data-i18n-title="docs.toggleTheme" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+				<button id="save-btn" disabled><i class="fas fa-save"></i> <span data-i18n="common.save">Save</span></button>
+				<a href="/" class="action-btn" data-i18n-title="docs.backToHome" title="Back to Home"><i class="fas fa-house"></i></a>
+			</div>
 	</main>
 	<div class="resizer" id="resizer-right"></div>
-	<aside id="sidebar-right">
+		<aside id="sidebar-right">
 		<div class="sidebar-header"><h2 data-i18n="docs.outline">Outline</h2></div>
 		<div id="outline-container"></div>
-	</aside>
-</div>
+		</aside>
+		<div id="mobile-docs-backdrop"></div>
+	</div>
 <div id="context-menu">
 	<button id="ctx-rename-btn"><i class="fas fa-edit"></i> <span data-i18n="docs.rename">Rename</span></button>
 	<button id="ctx-move-btn" disabled><i class="fas fa-arrows-alt"></i> <span data-i18n="docs.move">Move (Drag & Drop)</span></button>
@@ -387,6 +502,15 @@
 		const deleteBtn = document.getElementById('ctx-delete-btn');
 		const editorLoader = document.getElementById('editor-loader');
 		const outlineContainer = document.getElementById('outline-container');
+		const docsAppContainer = document.querySelector('.app-container');
+		const mobileFileTreeBtn = document.getElementById('mobile-file-tree-btn');
+		const mobileOutlineBtn = document.getElementById('mobile-outline-btn');
+		const mobileDocsBackdrop = document.getElementById('mobile-docs-backdrop');
+		const closeMobilePanels = () => docsAppContainer.classList.remove('file-tree-open', 'outline-open');
+		const toggleMobilePanel = panel => {
+			docsAppContainer.classList.toggle(panel);
+			docsAppContainer.classList.remove(panel === 'file-tree-open' ? 'outline-open' : 'file-tree-open');
+		};
 		// const api = mockApi;
 		const api = realApi;
 
@@ -492,6 +616,7 @@
 					e.preventDefault();
 					const targetElement = quill.root.querySelector(this.getAttribute('href'));
 					if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+					closeMobilePanels();
 				});
 			});
 		}
@@ -966,6 +1091,9 @@
 			saveBtn.addEventListener('click', saveActiveNote);
 			renameBtn.addEventListener('click', () => handleRename(selectedNodeId));
 			deleteBtn.addEventListener('click', () => handleDelete(selectedNodeId));
+			mobileFileTreeBtn.addEventListener('click', () => toggleMobilePanel('file-tree-open'));
+			mobileOutlineBtn.addEventListener('click', () => toggleMobilePanel('outline-open'));
+			mobileDocsBackdrop.addEventListener('click', closeMobilePanels);
 			const langToggleBtn = document.getElementById('lang-toggle-btn');
 			if (langToggleBtn) {
 				langToggleBtn.addEventListener('click', () => {
@@ -982,7 +1110,10 @@
 				const id = target.dataset.id;
 				document.querySelector('.tree-item.selected')?.classList.remove('selected');
 				target.classList.add('selected'); selectedNodeId = id;
-				if (target.classList.contains('file')) loadNote(id);
+				if (target.classList.contains('file')) {
+					loadNote(id);
+					closeMobilePanels();
+				}
 				else if (target.classList.contains('folder')) { if (target.classList.toggle('collapsed')) collapsedFolderIds.add(id); else collapsedFolderIds.delete(id); }
 			});
 			fileTreeEl.addEventListener('contextmenu', e => {
