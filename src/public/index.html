@@ -2657,9 +2657,12 @@
   #app-layout-container.bookmarks-mode #left-sidebar {
 	display: none !important;
   }
+  #app-layout-container.bookmarks-mode {
+	grid-template-columns: 1fr;
+  }
   #app-layout-container.bookmarks-mode #main-content-area .container {
-	max-width: 1200px;
-	width: 90%;
+	max-width: none;
+	width: 100%;
   }
   #attachments-viewer {
 	padding: 1rem 0;
@@ -2774,7 +2777,7 @@
   }
   #bookmarks-content {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 	gap: 1rem;
   }
   #bookmarks-content.loading-state {
