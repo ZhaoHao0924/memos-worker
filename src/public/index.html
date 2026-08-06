@@ -5223,7 +5223,7 @@
 
 	function getBookmarkHost(url) {
 		try {
-			return new URL(url).hostname;
+			return new URL(url).host;
 		} catch (e) {
 			return url;
 		}
