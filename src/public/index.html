@@ -2658,7 +2658,7 @@
 	display: none !important;
   }
   #app-layout-container.bookmarks-mode {
-	grid-template-columns: 1fr;
+	grid-template-columns: minmax(0, 1fr) 100px !important;
   }
   #app-layout-container.bookmarks-mode #main-content-area .container {
 	max-width: none;
@@ -2899,6 +2899,11 @@
   }
   #bookmark-modal-box .custom-modal-actions {
 	padding: 0 1.5rem 1.5rem;
+  }
+  @media (max-width: 1150px) {
+	#app-layout-container.bookmarks-mode {
+		grid-template-columns: 1fr !important;
+	}
   }
   @media (max-width: 600px) {
 	.bookmarks-header {
