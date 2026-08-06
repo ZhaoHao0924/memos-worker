@@ -92,6 +92,7 @@ const i18n = (function () {
 			'sidebar.files': 'Files',
 			'sidebar.docs': 'Docs',
 			'sidebar.openDocs': 'Open Docs',
+			'sidebar.bookmarks': 'Bookmarks',
 			'sidebar.filters': 'Filters',
 
 			// --- Bookmarks ---
@@ -406,6 +407,7 @@ const i18n = (function () {
 			'sidebar.files': '文件',
 			'sidebar.docs': '文档',
 			'sidebar.openDocs': '打开文档',
+			'sidebar.bookmarks': '书签',
 			'sidebar.filters': '筛选',
 
 			// --- Bookmarks ---
